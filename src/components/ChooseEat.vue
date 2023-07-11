@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="500">
     <v-container>
-      <v-row align="center" justify="start">
+      <v-row justify="start">
         <v-col
           v-for="(selection, i) in selections"
           :key="selection.text"
@@ -31,7 +31,7 @@
             <v-icon :disabled="loading" :icon="item.icon"></v-icon>
           </template>
 
-          <v-list-item-title v-text="item.text"></v-list-item-title>
+          <v-list-item-title>{{ item.text }}</v-list-item-title>
         </v-list-item>
       </template>
     </v-list>
@@ -45,24 +45,28 @@ export default {
   data: () => ({
     items: [
       {
-        text: 'Nature',
-        icon: 'mdi-nature'
+        text: 'Noodle',
+        icon: 'mdi-noodles'
       },
       {
-        text: 'Nightlife',
-        icon: 'mdi-glass-wine'
+        text: 'BBQ',
+        icon: 'mdi-food-steak'
       },
       {
-        text: 'November',
-        icon: 'mdi-calendar-range'
+        text: 'Sushi',
+        icon: 'mdi-fish'
       },
       {
-        text: 'Portland',
-        icon: 'mdi-map-marker'
+        text: 'Hotpot',
+        icon: 'mdi-pot-steam'
       },
       {
-        text: 'Biking',
-        icon: 'mdi-bike'
+        text: 'Dessert',
+        icon: 'mdi-candy'
+      },
+      {
+        text: 'Alcohol',
+        icon: 'mdi-liquor'
       }
     ],
     loading: false,

@@ -1,24 +1,24 @@
 <template>
   <div class="page">
+    <div class="title">Let's plan !</div>
     <div class="content">
-      <div class="title">Let's plan!</div>
       <div>Your Name</div>
       <v-text-field label="Name" variant="solo"></v-text-field>
-      <div>Place</div>
+      <div>Place you want to explore</div>
       <v-select
         label="Choose a place"
         :items="['Tokyo', 'Los Angeles', 'Paris']"
         variant="solo"
       ></v-select>
-      <div>Days</div>
+      <div>How long will you stay</div>
       <v-text-field label="Days" variant="solo"></v-text-field>
-      <div>Style</div>
+      <div>What you want to See</div>
       <TravelStyle />
-      <div>Eat</div>
+      <div>What you want to Eat</div>
       <ChooseEat />
     </div>
+    <v-btn class="button" size="x-large">Create !</v-btn>
   </div>
-  <div class="button"><v-btn>Create Your Own Itinerary!</v-btn></div>
 </template>
 
 <script>
@@ -39,7 +39,8 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 200px;
+  margin-top: 100px;
+  text-align: center;
 }
 
 .title {
@@ -49,6 +50,11 @@ export default {
 .content {
   font-family: 'Handlee', cursive;
   font-size: 20px;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 50px;
 }
 
 .button {
@@ -56,5 +62,7 @@ export default {
   display: flex;
   justify-content: center;
   align-content: center;
+  color: white;
+  background-color: #3d8994;
 }
 </style>
