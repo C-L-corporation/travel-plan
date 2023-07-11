@@ -1,11 +1,12 @@
 <script>
-import Home from './pages/Home.vue'
+import Footer from './components/Footer.vue'
 
 export default {
-  components: { Home }
+  components: { Footer }
 }
 </script>
 
 <template>
-  <Home />
+  <router-view></router-view>
+  <Footer />
 </template>
