@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../views/HomePage.vue'
 import PlanningPage from '../views/PlanningPage.vue'
-import ItineraryPage from "../views/ItineraryPage.vue"
+import ItineraryPage from '../views/ItineraryPage.vue'
 
 const routes = [
   {
@@ -23,7 +23,11 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    // Always scroll to the top
+    return { top: 0 }
+  }
 })
 
 export default router

@@ -5,7 +5,7 @@
     <div class="subtitle">5 DAYS TRIP</div>
     <div>Tokyo Itinerary</div>
     <img class="airplane" src="images/airplane.png" />
-    <img class="suitcase" src="images/bagcoffee.png" />
+    <img class="bagcoffee" src="images/bagcoffee.png" />
   </div>
   <div>
     <TimeLine />
@@ -50,7 +50,7 @@ export default {
   top: -50px;
   right: 150px;
 }
-.suitcase {
+.bagcoffee {
   position: absolute;
   bottom: 10px;
   left: 50px;
