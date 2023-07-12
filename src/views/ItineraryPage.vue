@@ -4,6 +4,8 @@
     <img class="line" src="images/line.png" />
     <div class="subtitle">5 DAYS TRIP</div>
     <div>Tokyo Itinerary</div>
+    <img class="airplane" src="images/airplane.png" />
+    <img class="suitcase" src="images/bagcoffee.png" />
   </div>
   <div>
     <TimeLine />
@@ -40,6 +42,18 @@ export default {
 .line {
   text-align: center;
   height: 20px;
+  width: 250px;
+}
+
+.airplane {
+  position: absolute;
+  top: -50px;
+  right: 150px;
+}
+.suitcase {
+  position: absolute;
+  bottom: 10px;
+  left: 50px;
   width: 250px;
 }
 </style>
