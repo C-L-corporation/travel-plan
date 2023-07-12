@@ -29,6 +29,7 @@
 .title {
   font-family: 'Satisfy', cursive;
   font-size: 80px;
+  color: #3b342a;
   margin-top: 150px;
 }
 .login {
