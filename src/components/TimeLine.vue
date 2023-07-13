@@ -16,6 +16,10 @@
                   A shrine dedicated to the deified spirits of Emperor Meiji and his consort,
                   Empress Shoken.
                 </div>
+                <div class="route">
+                  <v-icon size="small" icon="mdi-train-car" />Route: Walk 10 mins to Harajuku
+                  station.
+                </div>
               </v-col>
             </v-row>
           </v-timeline-item>
@@ -32,6 +36,9 @@
                   <v-icon size="small" color="#3d8994" icon="mdi-food-fork-drink" />
                   Lunch: Restaurant
                 </div>
+                <div class="route">
+                  <v-icon size="small" icon="mdi-train-car" />Route: Walk 10 mins to Omotesando.
+                </div>
               </v-col>
             </v-row>
           </v-timeline-item>
@@ -45,6 +52,10 @@
                   It is a major luxury shopping destination (along with Ginza); it is also home to
                   some of the most amazing examples of human-scale modern architecture that you will
                   find anywhere in the world.
+                </div>
+                <div class="route">
+                  <v-icon size="small" icon="mdi-train-car" />Route: Take train from Omotesando
+                  station to Shinjuku station around 10 mins.
                 </div>
               </v-col>
             </v-row>
@@ -104,5 +115,12 @@
 
 .food {
   font-weight: bold;
+  margin-top: 10px;
+}
+
+.route {
+  font-size: small;
+  background-color: #e7e3d9;
+  margin-top: 20px;
 }
 </style>

@@ -27,6 +27,16 @@
         ></v-select>
       </div>
 
+      <div class="contentpaper">
+        <div>Transportation</div>
+        <v-select
+          class="selectors"
+          label="By"
+          :items="['Car', 'Public Transportation']"
+          variant="solo"
+        ></v-select>
+      </div>
+
       <div class="choosing">
         <div>What you want to See</div>
         <TravelStyle />
