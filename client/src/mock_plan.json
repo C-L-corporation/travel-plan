@@ -1,0 +1,215 @@
+[
+    {
+      "day": 1,
+      "date": 1689264000,
+      "schedule": [
+        {
+          "id": 0,
+          "startAt": 1689296400, 
+          "endAt": 1689307200, 
+          "activity": "Visit Meiji Shrine",
+          "type": "ACTIVITY",
+          "location": "Meiji Shrine",
+          "transportation": [
+            {
+              "type": "TRAIN",
+              "duration": 1800, 
+              "from": "Hotel",
+              "to": "Meiji Shrine station"
+            },
+            {
+              "type": "WALKING",
+              "duration": 600, 
+              "from": "Meiji Shrine station",
+              "to": "Meiji Shrine"
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "startAt": 1689307200, 
+          "endAt": 1689310800, 
+          "activity": "Explore Harajuku district and Takeshita Street",
+          "type": "ACTIVITY",
+          "location": "Harajuku district",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 300, 
+              "from": "Meiji Shrine",
+              "to": "Harajuku district"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "startAt": 1689310800, 
+          "endAt": 1689314400, 
+          "activity": "Enjoy a traditional Japanese lunch",
+          "type": "MEAL",
+          "location": "Sakura Sushi Restaurant",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600, 
+              "from": "Harajuku district",
+              "to": "Sakura Sushi Restaurant"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "startAt": 1689314400, 
+          "endAt": 1689325200, 
+          "activity": "Visit the teamLab Borderless Digital Art Museum",
+          "type": "ACTIVITY",
+          "location": "teamLab Borderless",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600, 
+              "from": "Sakura Sushi Restaurant",
+              "to": "teamLab Borderless"
+            },
+            {
+              "type": "TRAIN",
+              "duration": 1200, 
+              "from": "teamLab Borderless",
+              "to": "teamLab Borderless Museum"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "startAt": 1689325200,
+          "endAt": 1689328800,
+          "activity": "Dinner at a local restaurant",
+          "type": "MEAL",
+          "location": "Kaisekiya Restaurant",
+          "transportation": [
+            {
+              "type": "TRAIN",
+              "duration": 1200,
+              "from": "teamLab Borderless Museum",
+              "to": "Kaisekiya Restaurant"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "startAt": 1689328800,
+          "endAt": 1689339600,
+          "activity": "Rest and Relaxation",
+          "type": "R_AND_R",
+          "location": "Hotel",
+          "transportation": [
+            {
+              "type": "TRAIN",
+              "duration": 1200,
+              "from": "Kaisekiya Restaurant",
+              "to": "Hotel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": 1689350400,
+      "schedule": [
+        {
+          "id": 0,
+          "startAt": 1689382800, 
+          "endAt": 1689386400,
+          "activity": "Visit Tokyo Skytree",
+          "type": "ACTIVITY",
+          "location": "Tokyo Skytree",
+          "transportation": [
+            {
+              "type": "TRAIN",
+              "duration": 1800, 
+              "from": "Hotel",
+              "to": "Tokyo Skytree station"
+            },
+            {
+              "type": "WALKING",
+              "duration": 600,
+              "from": "Tokyo Skytree station",
+              "to": "Tokyo Skytree"
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "startAt": 1689386400, 
+          "endAt": 1689390000, 
+          "activity": "Lunch at Tsukiji Fish Market",
+          "type": "MEAL",
+          "location": "Tsukiji Fish Market",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600, 
+              "from": "Tokyo Skytree",
+              "to": "Tsukiji Fish Market"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "startAt": 1689390000,
+          "endAt": 1689397200,
+          "activity": "Explore Asakusa district and Senso-ji Temple",
+          "type": "ACTIVITY",
+          "location": "Asakusa district",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600, 
+              "from": "Tsukiji Fish Market",
+              "to": "Asakusa district"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "startAt": 1689397200, 
+          "endAt": 1689400800,
+          "activity": "Snack Break",
+          "type": "MEAL",
+          "location": "Street Food Stalls",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600,
+              "from": "Asakusa district",
+              "to": "Street Food Stalls"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "startAt": 1689400800,
+          "endAt": 1689411600, 
+          "activity": "Explore Ueno Park and Museums",
+          "type": "ACTIVITY",
+          "location": "Ueno Park",
+          "transportation": [
+            {
+              "type": "WALKING",
+              "duration": 600,
+              "from": "Street Food Stalls",
+              "to": "Ueno Park"
+            },
+            {
+              "type": "TRAIN",
+              "duration": 1200, 
+              "from": "Ueno Park",
+              "to": "Museums"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  

@@ -86,9 +86,94 @@
       </v-col>
     </v-row>
   </v-container>
+
+  <v-container class="time-table">
+    <v-row v-for="days in scheduleDetail" :key="days.day">
+      <v-col cols="2" class="day"
+        >DAY <br />
+        {{ days.day }}</v-col
+      >
+      <v-col cols="7">
+        <v-timeline side="end" align="start">
+          <v-timeline-item
+            dot-color="{{ getDotColor(schedule.id) }}"
+            size="x-small"
+            class="time-line"
+            v-for="schedule in days.schedule"
+            :key="schedule.id"
+          >
+            <v-row no-gutters class="d-flex dot">
+              <v-col cols="2" class="time me-2">
+                {{ formatTime(schedule.startAt) }} - {{ formatTime(schedule.endAt) }}
+              </v-col>
+              <v-col>
+                <strong>{{ schedule.activity }}</strong>
+                <div class="text-caption">
+                  A shrine dedicated to the deified spirits of Emperor Meiji and his consort,
+                  Empress Shoken.
+                </div>
+                <div
+                  class="route"
+                  v-for="transport in schedule.transportation"
+                  :key="transport.type"
+                >
+                  <v-icon size="small" icon="mdi-train-car" />
+                  {{ transport.type }}: From {{ transport.from }} to {{ transport.to }} for
+                  {{ formatDuration(transport.duration) }}.
+                </div>
+              </v-col>
+            </v-row>
+          </v-timeline-item>
+        </v-timeline>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
-<script></script>
+<script>
+import axios from 'axios'
+import data from '../mock_plan.json'
+
+export default {
+  data() {
+    return {
+      scheduleDetail: data
+    }
+  },
+
+  mounted() {
+    this.fetchData()
+  },
+
+  methods: {
+    fetchData() {
+      axios
+        .get('http://localhost:8000/api/plan', { headers: { 'Content-Type': 'application/json' } })
+        .then((response) => {
+          console.log(response)
+          this.scheduleDetail = response.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+
+    formatTime(timestamp) {
+      const date = new Date(timestamp * 1000)
+      const hours = date.getHours().toString().padStart(2, '0')
+      return `${hours}:00`
+    },
+    formatDuration(duration) {
+      const minutes = Math.round(duration / 60)
+      return `${minutes} mins`
+    },
+
+    getDotColor(index) {
+      return index % 2 === 0 ? '#b4b17e' : '#3d8994'
+    }
+  }
+}
+</script>
 
 <style scoped>
 .time-table {
