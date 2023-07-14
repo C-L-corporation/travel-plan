@@ -82,7 +82,7 @@
         </v-timeline>
       </v-col>
       <v-col cols="3" class="poloroid">
-        <img src="images/poloroid.png" />
+        <img src="/images/poloroid.png" />
       </v-col>
     </v-row>
   </v-container>

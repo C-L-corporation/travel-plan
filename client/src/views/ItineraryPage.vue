@@ -1,11 +1,11 @@
 <template>
   <div class="top">
     <div>Christine's</div>
-    <img class="line" src="images/line.png" />
+    <img class="line" src="/images/line.png" />
     <div class="subtitle">5 DAYS TRIP</div>
     <div>Tokyo Itinerary</div>
-    <img class="airplane" src="images/airplane.png" />
-    <img class="bagcoffee" src="images/bagcoffee.png" />
+    <img class="airplane" src="/images/airplane.png" />
+    <img class="bagcoffee" src="/images/bagcoffee.png" />
   </div>
   <div>
     <TimeLine />

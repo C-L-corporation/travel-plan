@@ -52,9 +52,9 @@
       <v-btn class="button" size="x-large">Create !</v-btn>
     </router-link>
 
-    <img class="suitcase" src="images/suitcase.png" />
-    <img class="camera" src="images/camera.png" />
-    <img class="pic4" src="images/pic4.png" />
+    <img class="suitcase" src="/images/suitcase.png" />
+    <img class="camera" src="/images/camera.png" />
+    <img class="pic4" src="/images/pic4.png" />
   </div>
 </template>
 
@@ -78,7 +78,7 @@ export default {
   align-items: center;
   margin-top: 100px;
   text-align: center;
-  background-image: url('images/paper.png');
+  background-image: url('/images/paper.png');
   background-position-x: 50%;
   background-size: 65% 100%;
 }
@@ -116,7 +116,7 @@ export default {
 }
 
 .choosing {
-  background-image: url('images/note.png');
+  background-image: url('/images/note.png');
   background-position-x: 60%;
   background-position-y: 7%;
   background-size: 90%;
