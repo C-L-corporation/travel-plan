@@ -9,8 +9,8 @@
       <v-btn class="button">Log In</v-btn>
     </router-link>
   </div>
-  <img class="airplane" src="images/airplane.png" />
-  <img class="tag" src="images/tag.png" />
+  <img class="airplane" src="/images/airplane.png" />
+  <img class="tag" src="/images/tag.png" />
 </template>
 
 <script></script>
