@@ -12,13 +12,13 @@ const port = process.env.PORT;
 
 app.use(express.static(path.join(__dirname, "../..", "client", "dist")));
 
-app.post('/api/plan', (req, res) => {
+app.post('/plan', (req, res) => {
   const { hotelLocation, days, transportation, city, nation, placeOfInterest, foodCategories } = req.body;
   console.log(hotelLocation, days, transportation, city, nation, placeOfInterest, foodCategories);
   res.send(MOCK_DATA);
 });
 
-app.get('/api/plan', (_, res) => {
+app.get('/plan', (_, res) => {
   res.send(MOCK_DATA);
 });
 

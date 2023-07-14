@@ -148,7 +148,7 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get('http://localhost:8000/api/plan', { headers: { 'Content-Type': 'application/json' } })
+        .get('/api/plan', { headers: { 'Content-Type': 'application/json' } })
         .then((response) => {
           console.log(response)
           this.scheduleDetail = response.data
