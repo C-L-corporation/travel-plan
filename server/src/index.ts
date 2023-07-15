@@ -24,7 +24,10 @@ app.use(
   })
 );
 
-import { authenticateMiddleware, GOOGLE_AUTH_CALLBACK_ROUTE } from './authentication';
+import {
+  authenticateMiddleware,
+  GOOGLE_AUTH_CALLBACK_ROUTE,
+} from './authentication';
 import './authentication';
 
 const { PORT, NODE_ENV, CLIENT_PORT } = process.env;
@@ -51,6 +54,10 @@ server.listen(port, () => {
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
+app.get('/user', authenticateMiddleware, (req, res) => {
+  res.json(req.user);
+});
+
 // Google OAuth2
 // Auth
 app.get(
@@ -62,8 +69,10 @@ app.get(
 app.get(
   GOOGLE_AUTH_CALLBACK_ROUTE,
   passport.authenticate('google', {
-    successRedirect: NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
-    failureRedirect: NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
+    successRedirect:
+      NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}/planning` : '/planning',
+    failureRedirect:
+      NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
   })
 );
 
