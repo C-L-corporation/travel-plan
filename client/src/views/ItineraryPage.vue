@@ -52,7 +52,7 @@ export default {
 }
 .bagcoffee {
   position: absolute;
-  bottom: 10px;
+  bottom: -300px;
   left: 50px;
   width: 250px;
 }
