@@ -37,6 +37,21 @@
         ></v-select>
       </div>
 
+      <div class="contentpaper">
+        <div>Hotel location (expectation)</div>
+        <v-select
+          class="selectors"
+          label="Choose a place"
+          :items="[
+            'Shinjuku Area (West)',
+            'Minato Area (South)',
+            'Chuo Area (East)',
+            'Taito Area (North)'
+          ]"
+          variant="solo"
+        ></v-select>
+      </div>
+
       <div class="choosing">
         <div>What you want to See</div>
         <TravelStyle />

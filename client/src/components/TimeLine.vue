@@ -20,26 +20,33 @@
               </v-col>
               <v-col>
                 <strong>{{ schedule.activity }}</strong>
-                <div class="text-caption">
-                  A shrine dedicated to the deified spirits of Emperor Meiji and his consort,
-                  Empress Shoken.
+                <div v-show="schedule.type === 'MEAL'" class="restaurant">
+                  <v-icon size="small" icon="mdi-food-fork-drink" />
+                  {{ schedule.location }}
                 </div>
+
                 <div
                   class="route"
                   v-for="transport in schedule.transportation"
                   :key="transport.type"
                 >
-                  <v-icon size="small" icon="mdi-train-car" />
-                  {{ transport.type }}: From {{ transport.from }} to {{ transport.to }} for
-                  {{ formatDuration(transport.duration) }}.
+                  >>><v-icon v-if="transport.type === 'TRAIN'" size="small" icon="mdi-train" />
+                  <v-icon
+                    v-else-if="transport.type === 'WALKING'"
+                    size="small"
+                    icon="mdi-shoe-print"
+                  />
+                  <v-icon v-else size="small" icon="mdi-car" />
+                  {{ TRANSPORTATION_TYPE_MAP[transport.type] }} from {{ transport.from }} to
+                  {{ transport.to }} for {{ formatDuration(transport.duration) }}.
                 </div>
               </v-col>
             </v-row>
           </v-timeline-item>
         </v-timeline>
       </v-col>
-      <v-col cols="3" class="poloroid">
-        <img src="/images/poloroid.png" />
+      <v-col cols="3" class="image-position">
+        <img class="image" src="/images/pic5.png" />
       </v-col>
     </v-row>
   </v-container>
@@ -51,7 +58,12 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      scheduleDetail: null
+      scheduleDetail: null,
+      TRANSPORTATION_TYPE_MAP: {
+        TRAIN: 'Taking the train',
+        WALKING: 'Walking',
+        CAR: 'Driving'
+      }
     }
   },
 
@@ -103,8 +115,12 @@ export default {
   color: #3d8994;
   padding-top: 40px;
 }
-.poloroid {
+.image-position {
   text-align: right;
+}
+
+.image {
+  width: 300px;
 }
 
 .time {
@@ -112,14 +128,16 @@ export default {
   width: 300px;
 }
 
-.food {
+.restaurant {
   font-weight: bold;
+  color: #3d8994;
   margin-top: 10px;
 }
 
 .route {
   font-size: small;
-  background-color: #e7e3d9;
-  margin-top: 20px;
+  color: #6e604d;
+  background-color: #f2efe6;
+  margin-top: 10px;
 }
 </style>
