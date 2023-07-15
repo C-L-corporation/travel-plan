@@ -6,14 +6,14 @@ import morgan from 'morgan';
 import fs from 'fs';
 
 dotenv.config();
+const { PORT, NODE_ENV } = process.env;
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
 );
 
 const app = express();
-const { PORT, NODE_ENV } = process.env;
-const port = PORT ?? 8000;
+
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 const options = {
@@ -22,6 +22,7 @@ const options = {
 };
 const server = spdy.createServer(options, app);
 
+const port = PORT ?? 8000;
 server.listen(port, () => {
     console.log('[Server] Listening on port: ' + port + '.')
 });
