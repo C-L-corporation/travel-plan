@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 passport.serializeUser(function (user: any, cb) {
   process.nextTick(() => {
@@ -22,16 +22,17 @@ passport.deserializeUser(function (user: any, cb) {
   });
 });
 
+export const GOOGLE_AUTH_CALLBACK_ROUTE = '/auth/google/callback';
+
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID ?? '', // Your Credentials here.
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '', // Your Credentials here.
-      callbackURL: '/auth/google/callback',
-      passReqToCallback: true,
+      clientID: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      callbackURL: GOOGLE_AUTH_CALLBACK_ROUTE,
     },
-    function (request, accessToken, refreshToken, profile, done) {
-      return done(null, profile);
+    function (accessToken, refreshToken, user, cb) {
+      return cb(null, user);
     }
   )
 );

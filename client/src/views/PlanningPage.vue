@@ -3,11 +3,6 @@
     <div class="title">Let's plan !</div>
     <div class="content">
       <div class="contentpaper">
-        <div>Your Name</div>
-        <v-text-field class="selectors" label="Name" variant="solo"></v-text-field>
-      </div>
-
-      <div class="contentpaper">
         <div>Place you want to explore</div>
         <v-select
           class="selectors"

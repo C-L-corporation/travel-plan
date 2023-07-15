@@ -9,6 +9,7 @@ Add .env to `/server` folder
 ```bash
 GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
 GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
+CLIENT_URL=3000 # for development only
 ```
 
 ### Install Dependencies

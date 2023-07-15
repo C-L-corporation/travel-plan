@@ -1,2 +1,4 @@
 import './passport';
-export { authenticateMiddleware } from './middleware';
+export * from './passport';
+export * from './middleware';
+
