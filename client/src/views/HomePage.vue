@@ -1,10 +1,10 @@
 <template>
   <div class="page">
     <div class="title">Plan Your Trip Now!</div>
-    <v-card class="login mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-      <div class="subtitle">Google Login</div>
-      <div class="subtitle">Facebook Login</div>
-    </v-card>
+    <div class="login mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+      <GoogleLoginButton />
+      <FacebookLoginButton />
+    </div>
     <router-link to="/planning">
       <v-btn class="button">Log In</v-btn>
     </router-link>
@@ -13,7 +13,17 @@
   <img class="tag" src="/images/tag.png" />
 </template>
 
-<script></script>
+<script>
+import GoogleLoginButton from '../components/GoogleLoginButton.vue'
+import FacebookLoginButton from '../components/FacebookLoginButton.vue'
+
+export default {
+  components: {
+    GoogleLoginButton,
+    FacebookLoginButton
+  }
+}
+</script>
 
 <style scoped>
 .page {
@@ -33,6 +43,13 @@
   margin-top: 150px;
 }
 .login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/images/contentpaper.png');
+  background-size: cover;
+  width: 450px;
   margin: 80px;
 }
 
