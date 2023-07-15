@@ -24,10 +24,10 @@ app.use(
   })
 );
 
-import { authenticateMiddleware } from './authentication';
+import { authenticateMiddleware, GOOGLE_AUTH_CALLBACK_ROUTE } from './authentication';
 import './authentication';
 
-const { PORT, NODE_ENV } = process.env;
+const { PORT, NODE_ENV, CLIENT_PORT } = process.env;
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
@@ -58,27 +58,14 @@ app.get(
   passport.authenticate('google', { scope: ['email', 'profile'] })
 );
 
-const GOOGLE_AUTH_CALLBACK_ROUTE = '/auth/google/callback';
 // Auth Callback
 app.get(
   GOOGLE_AUTH_CALLBACK_ROUTE,
   passport.authenticate('google', {
-    successRedirect: `${GOOGLE_AUTH_CALLBACK_ROUTE}/success`,
-    failureRedirect: `${GOOGLE_AUTH_CALLBACK_ROUTE}/failure`,
+    successRedirect: NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
+    failureRedirect: NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
   })
 );
-
-// Success
-app.get(`${GOOGLE_AUTH_CALLBACK_ROUTE}/success`, (req, res) => {
-  if (!req.user) res.redirect(`${GOOGLE_AUTH_CALLBACK_ROUTE}/failure`);
-
-  res.json(req.user);
-});
-
-// failure
-app.get(`${GOOGLE_AUTH_CALLBACK_ROUTE}/failure`, (req, res) => {
-  res.status(401).json({ error: 'Error logging in. Please try again.' });
-});
 
 app.post('/api/plan', authenticateMiddleware, (req, res) => {
   const {
