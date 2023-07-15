@@ -2,16 +2,20 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import spdy from 'spdy';
+import morgan from 'morgan';
 import fs from 'fs';
+
+dotenv.config();
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
 );
 
-dotenv.config();
-
 const app = express();
-const port = process.env.PORT;
+const { PORT, NODE_ENV } = process.env;
+const port = PORT ?? 8000;
+app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
+
 const options = {
   key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
   cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
