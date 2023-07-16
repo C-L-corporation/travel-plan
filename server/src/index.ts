@@ -7,9 +7,12 @@ import fs from 'fs';
 import session from 'express-session';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import csrf from 'csurf';
+import cookieParser from 'cookie-parser';
+
 import { passport, authenticateMiddleware } from './authentication';
 import { authRouter } from './routes';
-import { rateLimit } from 'express-rate-limit';
 
 dotenv.config();
 const { PORT, NODE_ENV, SESSION_SECRET } = process.env;
@@ -47,7 +50,17 @@ const apiRateLimiter = rateLimit({
   max: 30, // Maximum number of requests allowed per minute
 });
 
+app.use(cookieParser());
+const csrfProtection = csrf({ cookie: true });
+app.get('/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
 app.use('/auth', apiRateLimiter, authRouter);
+
+
+
+
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
