@@ -3,10 +3,12 @@ import dotenv from 'dotenv';
 import path from 'path';
 import spdy from 'spdy';
 import morgan from 'morgan';
-import passport from 'passport';
 import fs from 'fs';
 import crypto from 'crypto';
 import session from 'express-session';
+import createHttpError from 'http-errors';
+import { passport, authenticateMiddleware } from './authentication';
+import { authRouter } from './routes';
 
 dotenv.config();
 
@@ -24,13 +26,7 @@ app.use(
   })
 );
 
-import {
-  authenticateMiddleware,
-  GOOGLE_AUTH_CALLBACK_ROUTE,
-} from './authentication';
-import './authentication';
-
-const { PORT, NODE_ENV, CLIENT_PORT } = process.env;
+const { PORT, NODE_ENV } = process.env;
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
@@ -54,29 +50,9 @@ server.listen(port, () => {
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
-app.get('/user', authenticateMiddleware, (req, res) => {
-  res.json(req.user);
-});
+app.use('/auth', authRouter);
 
-// Google OAuth2
-// Auth
-app.get(
-  '/auth/google',
-  passport.authenticate('google', { scope: ['email', 'profile'] })
-);
-
-// Auth Callback
-app.get(
-  GOOGLE_AUTH_CALLBACK_ROUTE,
-  passport.authenticate('google', {
-    successRedirect:
-      NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}/planning` : '/planning',
-    failureRedirect:
-      NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}` : '/',
-  })
-);
-
-app.post('/api/plan', authenticateMiddleware, (req, res) => {
+app.post('/plan', authenticateMiddleware, (req, res) => {
   const {
     hotelLocation,
     days,
@@ -98,6 +74,25 @@ app.post('/api/plan', authenticateMiddleware, (req, res) => {
   res.send(MOCK_DATA);
 });
 
+// TODO: remove this route
 app.get('/plan', (_, res) => {
   res.send(MOCK_DATA);
+});
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  next(createHttpError(404));
+});
+
+// error handler
+app.use((err, req, res, next) => {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = NODE_ENV === 'development' ? err : {};
+
+  res.status(err.status ?? 500);
+  res.json({
+    message: err.message,
+    error: err,
+  });
 });
