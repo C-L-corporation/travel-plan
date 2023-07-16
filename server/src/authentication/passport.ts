@@ -45,7 +45,6 @@ passport.use(
   )
 );
 
-console.log(FACEBOOK_APP_ID, FACEBOOK_APP_SECRET);
 // Facebook passport strategy
 export const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
 passport.use(

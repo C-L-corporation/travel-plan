@@ -4,9 +4,7 @@ import path from 'path';
 import spdy from 'spdy';
 import morgan from 'morgan';
 import fs from 'fs';
-import crypto from 'crypto';
 import session from 'express-session';
-import cookieParser from 'cookie-parser';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
 import { passport, authenticateMiddleware } from './authentication';
@@ -17,20 +15,17 @@ dotenv.config();
 const { PORT, NODE_ENV, SESSION_SECRET } = process.env;
 
 const app = express();
+
+app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
+app.use(helmet());
 app.use(
   session({
-    secret: SESSION_SECRET,
+    secret: SESSION_SECRET as string ,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
   })
 );
-
-
-
-app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
-
-app.use(helmet());
 app.use(passport.initialize());
 app.use(passport.session());
 
