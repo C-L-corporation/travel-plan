@@ -23,7 +23,7 @@ app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(
   session({
-    secret: SESSION_SECRET as string ,
+    secret: SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
@@ -57,10 +57,6 @@ app.get('/csrf-token', csrfProtection, (req, res) => {
 });
 
 app.use('/auth', apiRateLimiter, authRouter);
-
-
-
-
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
