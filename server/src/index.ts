@@ -6,34 +6,31 @@ import morgan from 'morgan';
 import fs from 'fs';
 import crypto from 'crypto';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import createHttpError from 'http-errors';
+import helmet from 'helmet';
 import { passport, authenticateMiddleware } from './authentication';
 import { authRouter } from './routes';
+import { rateLimit } from 'express-rate-limit';
 
 dotenv.config();
+const { PORT, NODE_ENV, SESSION_SECRET } = process.env;
 
 const app = express();
-const secret = crypto
-  .generateKeySync('aes', { length: 128 })
-  .export()
-  .toString('hex');
 app.use(
   session({
-    secret,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
   })
 );
 
-const { PORT, NODE_ENV } = process.env;
 
-const MOCK_DATA = JSON.parse(
-  fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
-);
 
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 
+app.use(helmet());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -50,9 +47,17 @@ server.listen(port, () => {
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
-app.use('/auth', authRouter);
+const apiRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // Maximum number of requests allowed per minute
+});
 
-app.post('/plan', authenticateMiddleware, (req, res) => {
+app.use('/auth', apiRateLimiter, authRouter);
+
+const MOCK_DATA = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
+);
+app.post('/plan', authenticateMiddleware, apiRateLimiter, (req, res) => {
   const {
     hotelLocation,
     days,
