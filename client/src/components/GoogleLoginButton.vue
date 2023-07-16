@@ -1,5 +1,5 @@
 <template>
-  <a href="/api/auth/google" target="_blank" class="google">
+  <a href="/api/auth/google" class="google">
     <v-icon size="small" icon="mdi-google" />
     <div>Log in with Google</div>
   </a>
