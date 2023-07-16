@@ -5,19 +5,15 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 
 dotenv.config();
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET } = process.env;
+const {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  FACEBOOK_APP_ID,
+  FACEBOOK_APP_SECRET,
+} = process.env;
 
 passport.serializeUser(function (user: any, cb) {
   process.nextTick(() => {
-    if (user.provider === 'google') {
-      return cb(null, {
-        id: user.id,
-        username: user.displayName,
-        picture: user.picture,
-        email: user.email,
-        provider: user.provider,
-      });
-    }
     cb(null, user);
   });
 });
@@ -38,20 +34,38 @@ passport.use(
       callbackURL: `/auth${GOOGLE_AUTH_CALLBACK_ROUTE}`,
     },
     function (accessToken, refreshToken, user, cb) {
-      return cb(null, user);
+      return cb(null, {
+        accountId: user.id,
+        username: user.displayName,
+        photo: user.photos?.[0]?.value ?? null,
+        email: user.emails?.[0] ?? null,
+        provider: user.provider,
+      });
     }
   )
 );
 
+console.log(FACEBOOK_APP_ID, FACEBOOK_APP_SECRET);
 // Facebook passport strategy
 export const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
-passport.use(new FacebookStrategy({
-  clientID: FACEBOOK_APP_ID,
-  clientSecret: FACEBOOK_APP_SECRET,
-  callbackURL: `/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`
-}, function (accessToken, refreshToken, user, cb) {
-  return cb(null, user);
-}
-));
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: FACEBOOK_APP_ID ?? '',
+      clientSecret: FACEBOOK_APP_SECRET ?? '',
+      callbackURL: `/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
+      profileFields: ['id', 'displayName', 'photos', 'email'],
+    },
+    function (accessToken, refreshToken, user, cb) {
+      return cb(null, {
+        accountId: user.id,
+        username: user.displayName,
+        photo: user.photos?.[0]?.value ?? null,
+        email: user.emails?.[0] ?? null,
+        provider: user.provider,
+      });
+    }
+  )
+);
 
 export { passport };
