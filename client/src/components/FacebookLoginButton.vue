@@ -1,5 +1,5 @@
 <template>
-  <a href="#" class="facebook">
+  <a href="/api/auth/facebook" class="facebook">
     <v-icon size="small" icon="mdi-facebook" />
     <div>Log in with Facebook</div>
   </a>
