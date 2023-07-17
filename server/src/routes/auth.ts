@@ -1,10 +1,14 @@
 import express from 'express';
 import passport from 'passport';
+import createHttpError from 'http-errors';
 import {
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   GOOGLE_AUTH_CALLBACK_ROUTE,
-  authenticateMiddleware,
+  getToken,
+  verifyUser,
 } from '../authenticate';
+import { User } from '../models';
+
 
 const { NODE_ENV, CLIENT_PORT } = process.env;
 const LANDING_PAGE_ROUTE =
@@ -27,26 +31,81 @@ authRouter.get(
 authRouter.get(
   GOOGLE_AUTH_CALLBACK_ROUTE,
   passport.authenticate('google', {
-    successRedirect: `${LANDING_PAGE_ROUTE}planning`,
     failureRedirect: LANDING_PAGE_ROUTE,
-  })
+    session: false,
+  }),
+  async (req, res, next) => {
+    try {
+      if (!req.user) next(createHttpError(401));
+      const token = getToken(req.user as string);
+
+      res
+        .cookie('token', token, {
+          sameSite: true,
+          secure: true,
+          maxAge: 60 * 1000,
+        })
+        .clearCookie('connect.sid')
+        .redirect(`${LANDING_PAGE_ROUTE}planning`);
+    } catch (err) {
+      next(err);
+    }
+  }
 );
 
 authRouter.get(
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   passport.authenticate('facebook', {
-    successRedirect: `${LANDING_PAGE_ROUTE}planning`,
     failureRedirect: LANDING_PAGE_ROUTE,
-  })
+    session: false,
+  }),
+  async (req, res, next) => {
+    try {
+      if (!req.user) next(createHttpError(401));
+      const token = getToken(req.user as string);
+
+      res
+        .cookie('token', token, {
+          sameSite: true,
+          secure: true,
+          maxAge: 60 * 1000,
+        })
+        .clearCookie('connect.sid')
+        .redirect(`${LANDING_PAGE_ROUTE}planning`);
+    } catch (err) {
+      next(err);
+    }
+  }
 );
 
-// Get the current user
-authRouter.get('/me', authenticateMiddleware, (req, res) => {
-  res.json(req.user);
+authRouter.get('/token', async (req, res, next) => {
+  try {
+    if (!req.user) next(createHttpError(401));
+    const token = getToken(req.user as string);
+
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ token });
+  } catch (err) {
+    next(err);
+  }
 });
 
-authRouter.get('/logout', authenticateMiddleware, (req, res, next) => {
-  req.logout(next);
+// Get the current user
+authRouter.get('/me', verifyUser, async (req, res, next) => {
+  try {
+    if (!req.user) next(createHttpError(401));
+    const user = await User.findById(req.user);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+authRouter.get('/logout', verifyUser, (req, res, next) => {
+  res.clearCookie('token');
   res.redirect(LANDING_PAGE_ROUTE);
 });
 

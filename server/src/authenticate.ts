@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
+import { User } from './models';
 
 const {
   GOOGLE_CLIENT_ID,
@@ -13,27 +13,12 @@ const {
   SESSION_SECRET,
 } = process.env;
 
-passport.serializeUser(function (user: any, cb) {
-  process.nextTick(() => {
-    cb(null, user);
-  });
-});
-
-passport.deserializeUser(function (user: any, cb) {
-  process.nextTick(function () {
-    return cb(null, user);
-  });
-});
-
 // JWT passport strategy
-export const getToken = (user) =>
-  jwt.sign(user, SESSION_SECRET ?? 'wonderful-secret', { expiresIn: '1d' });
-
 passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: SESSION_SECRET ?? 'wonderful-secret',
+      secretOrKey: SESSION_SECRET ?? 'wonderful-jwt-secret',
     },
     async function (jwtPayload, done) {
       try {
@@ -48,8 +33,15 @@ passport.use(
   )
 );
 
+const getToken = (user: string) =>
+  jwt.sign({ user }, SESSION_SECRET ?? 'wonderful-jwt-secret', {
+    expiresIn: '1h',
+  });
+
+const verifyUser = passport.authenticate('jwt', { session: false });
+
 // Google passport strategy
-export const GOOGLE_AUTH_CALLBACK_ROUTE = '/google/callback';
+const GOOGLE_AUTH_CALLBACK_ROUTE = '/google/callback';
 passport.use(
   new GoogleStrategy(
     {
@@ -80,7 +72,7 @@ passport.use(
           await user.save();
         }
 
-        return done(null, user);
+        return done(null, user._id.toString());
       } catch (err) {
         return done(err as Error);
       }
@@ -89,7 +81,7 @@ passport.use(
 );
 
 // Facebook passport strategy
-export const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
+const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
 passport.use(
   new FacebookStrategy(
     {
@@ -110,7 +102,6 @@ passport.use(
               },
             };
         let user = await User.findOne(query);
-
         if (!user) {
           user = new User({
             name: profile.displayName,
@@ -121,7 +112,7 @@ passport.use(
           await user.save();
         }
 
-        return done(null, user);
+        return done(null, user._id.toString());
       } catch (err) {
         return done(err as Error);
       }
@@ -129,4 +120,10 @@ passport.use(
   )
 );
 
-export { passport };
+export {
+  passport,
+  GOOGLE_AUTH_CALLBACK_ROUTE,
+  FACEBOOK_AUTH_CALLBACK_ROUTE,
+  getToken,
+  verifyUser,
+};

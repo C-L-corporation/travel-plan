@@ -14,11 +14,10 @@ dotenv.config();
 if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
-import { passport, authenticateMiddleware } from './authenticate';
+import { passport, verifyUser } from './authenticate';
 import { authRouter } from './routes';
 
-const { NODE_ENV, SESSION_SECRET, SERVER_PORT, MONGODB_URL } =
-  process.env;
+const { NODE_ENV, SESSION_SECRET, SERVER_PORT, MONGODB_URL } = process.env;
 
 const app = express();
 
@@ -31,11 +30,13 @@ connect(MONGODB_URL ?? '')
     console.error(err);
   });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(
   session({
-    secret: SESSION_SECRET ?? 'wonderful-secret',
+    secret: SESSION_SECRET ?? 'wonderful-session-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
@@ -67,7 +68,7 @@ app.use('/auth', apiRateLimiter, authRouter);
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
 );
-app.post('/plan', authenticateMiddleware, apiRateLimiter, (req, res) => {
+app.post('/plan', verifyUser, apiRateLimiter, (req, res) => {
   const {
     hotelLocation,
     days,

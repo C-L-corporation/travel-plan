@@ -1,19 +1,19 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-type User = {
+type IUser = {
     name: string;
     email?: string;
     photo?: string;
     providers: ReadonlyArray<{ provider: string, userId: string }>;
 }
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<IUser>({
     name: { type: String, required: true },
     email: { type: String, required: true },
     photo: String,
     providers: [{ provider: String, userId: String }],
 });
 
-const User = model<User>('User', userSchema);
+const User = model<IUser>('User', userSchema);
 
-export default User;
+export { User };
