@@ -10,23 +10,34 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import csrf from 'csurf';
 import cookieParser from 'cookie-parser';
+import { connect } from 'mongoose';
 
 dotenv.config();
-if (process.env.NODE_ENV === 'development') dotenv.config({ path: path.join(__dirname, '../../.env.development') });
+if (process.env.NODE_ENV === 'development')
+  dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
-import { passport, authenticateMiddleware } from './authentication';
+import { passport, authenticateMiddleware } from './authenticate';
 import { authRouter } from './routes';
 
-
-const { PORT, NODE_ENV, SESSION_SECRET, SERVER_PORT } = process.env;
+const { NODE_ENV, SESSION_SECRET, SERVER_PORT, MONGODB_URL } =
+  process.env;
 
 const app = express();
+
+// Connect to MongoDB
+connect(MONGODB_URL ?? '')
+  .then(() => {
+    console.info('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(
   session({
-    secret: SESSION_SECRET as string,
+    secret: SESSION_SECRET ?? 'wonderful-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
@@ -41,9 +52,9 @@ const options = {
 };
 const server = spdy.createServer(options, app);
 
-const port = (PORT ?? SERVER_PORT) as string;
+const port = SERVER_PORT ?? 8000;
 server.listen(port, () => {
-  console.log('[Server] Listening on port: ' + port + '.');
+  console.info('[Server] Listening on port: ' + port + '.');
 });
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
@@ -74,7 +85,7 @@ app.post('/plan', authenticateMiddleware, apiRateLimiter, (req, res) => {
     placeOfInterest,
     foodCategories,
   } = req.body;
-  console.log(
+  console.info(
     hotelLocation,
     days,
     transportation,

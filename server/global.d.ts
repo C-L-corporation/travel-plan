@@ -8,5 +8,6 @@ declare namespace NodeJS {
     CLIENT_PORT?: string;
     SERVER_PORT?: string;
     SESSION_SECRET: string;
+    MONGODB_URL: string;
   }
 }

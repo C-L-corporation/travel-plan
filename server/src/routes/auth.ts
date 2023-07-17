@@ -4,7 +4,7 @@ import {
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   GOOGLE_AUTH_CALLBACK_ROUTE,
   authenticateMiddleware,
-} from '../authentication';
+} from '../authenticate';
 
 const { NODE_ENV, CLIENT_PORT } = process.env;
 const LANDING_PAGE_ROUTE =

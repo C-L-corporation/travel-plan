@@ -32,11 +32,10 @@ passport.use(
     },
     function (accessToken, refreshToken, user, cb) {
       return cb(null, {
-        accountId: user.id,
-        username: user.displayName,
+        providers: [{ userId: user.id, provider: user.provider }],
+        name: user.displayName,
         photo: user.photos?.[0]?.value ?? null,
-        email: user.emails?.[0] ?? null,
-        provider: user.provider,
+        email: user.emails?.[0].value ?? null,
       });
     }
   )
@@ -54,11 +53,10 @@ passport.use(
     },
     function (accessToken, refreshToken, user, cb) {
       return cb(null, {
-        accountId: user.id,
-        username: user.displayName,
+        providers: [{ userId: user.id, provider: user.provider }],
+        name: user.displayName,
         photo: user.photos?.[0]?.value ?? null,
-        email: user.emails?.[0] ?? null,
-        provider: user.provider,
+        email: user.emails?.[0].value ?? null,
       });
     }
   )
