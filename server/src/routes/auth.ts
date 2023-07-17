@@ -7,7 +7,6 @@ import {
 } from '../authentication';
 
 const { NODE_ENV, CLIENT_PORT } = process.env;
-
 const LANDING_PAGE_ROUTE =
   NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}/` : '/';
 

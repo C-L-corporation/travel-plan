@@ -6,6 +6,7 @@ declare namespace NodeJS {
     FACEBOOK_APP_ID?: string;
     FACEBOOK_APP_SECRET?: string;
     CLIENT_PORT?: string;
+    SERVER_PORT?: string;
     SESSION_SECRET: string;
   }
 }

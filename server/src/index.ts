@@ -11,11 +11,14 @@ import { rateLimit } from 'express-rate-limit';
 import csrf from 'csurf';
 import cookieParser from 'cookie-parser';
 
+dotenv.config();
+if (process.env.NODE_ENV === 'development') dotenv.config({ path: path.join(__dirname, '../../.env.development') });
+
 import { passport, authenticateMiddleware } from './authentication';
 import { authRouter } from './routes';
 
-dotenv.config();
-const { PORT, NODE_ENV, SESSION_SECRET } = process.env;
+
+const { PORT, NODE_ENV, SESSION_SECRET, SERVER_PORT } = process.env;
 
 const app = express();
 
@@ -38,7 +41,7 @@ const options = {
 };
 const server = spdy.createServer(options, app);
 
-const port = PORT ?? 8000;
+const port = (PORT ?? SERVER_PORT) as string;
 server.listen(port, () => {
   console.log('[Server] Listening on port: ' + port + '.');
 });
