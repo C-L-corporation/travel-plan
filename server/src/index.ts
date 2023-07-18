@@ -15,9 +15,10 @@ if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
 import { passport, verifyUser } from './authenticate';
-import { authRouter } from './routes';
+import { authRouter, planRouter } from './routes';
 
-const { NODE_ENV, SESSION_SECRET, SERVER_PORT, MONGODB_URL } = process.env;
+const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
+  process.env;
 
 const app = express();
 
@@ -29,6 +30,45 @@ connect(MONGODB_URL ?? '')
   .catch((err) => {
     console.error(err);
   });
+
+if (NODE_ENV === 'development') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const swaggerUi = require('swagger-ui-express');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const swaggerJsdoc = require('swagger-jsdoc');
+
+  const options = {
+    definition: {
+      openapi: '3.1.0',
+      info: {
+        title: 'Travel plan API',
+        version: '1.0.0',
+      },
+    },
+    apis: [
+      path.resolve(__dirname, '../docs/components.yaml'),
+      `${__dirname}/routes/*.ts`,
+    ],
+  };
+
+  const specs = swaggerJsdoc(options);
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  console.info('Swagger UI available at /api-docs');
+}
+
+const server = spdy.createServer(
+  {
+    key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
+  },
+  app
+);
+
+const port = PORT ?? SERVER_PORT ?? 8000;
+server.listen(port, () => {
+  console.info('[Server] Listening on port: ' + port + '.');
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,17 +85,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const options = {
-  key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
-};
-const server = spdy.createServer(options, app);
-
-const port = SERVER_PORT ?? 8000;
-server.listen(port, () => {
-  console.info('[Server] Listening on port: ' + port + '.');
-});
-
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
 const apiRateLimiter = rateLimit({
@@ -64,6 +93,7 @@ const apiRateLimiter = rateLimit({
 });
 
 app.use('/auth', apiRateLimiter, authRouter);
+app.use('/plan', apiRateLimiter, planRouter);
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')

@@ -60,17 +60,25 @@ passport.use(
                 $elemMatch: { userId: profile.id, provider: profile.provider },
               },
             };
-        let user = await User.findOne(query);
 
-        if (!user) {
-          user = new User({
+        const update = {
+          $setOnInsert: {
             name: profile.displayName,
-            providers: [{ userId: profile.id, provider: profile.provider }],
             photo: profile.photos?.[0]?.value ?? null,
             email: profile.emails?.[0].value ?? null,
-          });
-          await user.save();
-        }
+          },
+          $addToSet: {
+            providers: { userId: profile.id, provider: profile.provider },
+          },
+        };
+
+        // Set the upsert option to true to create a new document if no document matches the query
+        const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+        // The user should always exist after upserting
+        const user = await User.findOneAndUpdate(query, update, options);
+
+        if (!user) throw new Error('Unexpected error while upserting user');
 
         return done(null, user._id.toString());
       } catch (err) {

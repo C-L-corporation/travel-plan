@@ -9,19 +9,37 @@ import {
 } from '../authenticate';
 import { User } from '../models';
 
-
 const { NODE_ENV, CLIENT_PORT } = process.env;
 const LANDING_PAGE_ROUTE =
   NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}/` : '/';
 
 const authRouter = express.Router();
-authRouter.use(express.json());
 
 // Auth
+/**
+ * @swagger
+ * /auth/google:
+ *   get:
+ *     summary: Authenticate with Google
+ *     description: Redirects to Google for authentication, asking for profile and email permissions.
+ *     responses:
+ *       302:
+ *         description: Redirect to Google's OAuth consent screen.
+ */
 authRouter.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
+/**
+ * @swagger
+ * /auth/facebook:
+ *   get:
+ *     summary: Authenticate with Facebook
+ *     description: Redirects to Facebook for authentication, asking for public profile and email permissions.
+ *     responses:
+ *       302:
+ *         description: Redirect to Facebook's OAuth consent screen.
+ */
 authRouter.get(
   '/facebook',
   passport.authenticate('facebook', { scope: ['public_profile', 'email'] })
@@ -78,6 +96,25 @@ authRouter.get(
   }
 );
 
+/**
+ * @swagger
+ * /auth/token:
+ *   get:
+ *     summary: Get authentication token
+ *     description: Returns the authentication token for the currently logged in user.
+ *     responses:
+ *       200:
+ *         description: Returns the authentication token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Not authorized.
+ */
 authRouter.get('/token', async (req, res, next) => {
   try {
     if (!req.user) next(createHttpError(401));
@@ -91,7 +128,24 @@ authRouter.get('/token', async (req, res, next) => {
   }
 });
 
-// Get the current user
+/**
+ * @swagger
+ * /me:
+ *   get:
+ *     summary: Retrieve the authenticated user's information
+ *     description: This API route retrieves the authenticated user's data based on JWT authentication.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The user's information was retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized. The user needs to login.
+ */
 authRouter.get('/me', verifyUser, async (req, res, next) => {
   try {
     if (!req.user) next(createHttpError(401));
@@ -104,6 +158,16 @@ authRouter.get('/me', verifyUser, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/logout:
+ *   get:
+ *     summary: Logout
+ *     description: Logs out the currently logged in user and redirects to the landing page.
+ *     responses:
+ *       302:
+ *         description: Redirects to the landing page.
+ */
 authRouter.get('/logout', verifyUser, (req, res, next) => {
   res.clearCookie('token');
   res.redirect(LANDING_PAGE_ROUTE);
