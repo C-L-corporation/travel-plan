@@ -3,15 +3,22 @@ components:
     User:
       type: object
       properties:
+        _id:
+          type: string
+          description: The user ID.
+          example: 60d221f68b38923a04f2a09f
         name:
           type: string
           description: The name of the user.
+          example: John Doe
         email:
           type: string
-          description: The email address of the user.
+          description: The email of the user.
+          example: john.doe@example.com
         photo:
           type: string
-          description: The photo URL of the user.
+          description: The URL to the profile picture of the user.
+          example: https://example.com/user-photo.jpg
         providers:
           type: array
           items:
@@ -19,13 +26,25 @@ components:
             properties:
               provider:
                 type: string
-                description: The provider name.
+                description: The name of the provider.
+                example: Google
               userId:
                 type: string
                 description: The ID of the user in the provider's system.
-      required:
-        - name
-        - email
+                example: 1234567890
+          description: The list of providers that the user is linked to.
+          example: [{ provider: 'Google', userId: '1234567890' }]
+        isAdmin:
+          type: boolean
+          description: Whether the user is an administrator.
+          example: false
+        planTriggers:
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: The timestamps when the user triggered the plan function.
+          example: ['2023-07-18T00:00:00Z', '2023-07-19T00:00:00Z', '2023-07-20T00:00:00Z']
     Transportation:
       type: object
       properties:

@@ -1,19 +1,23 @@
 import express from 'express';
 import passport from 'passport';
 import createHttpError from 'http-errors';
+import type { ObjectId } from 'mongoose';
 import {
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   GOOGLE_AUTH_CALLBACK_ROUTE,
   getToken,
   verifyUser,
+  type UserWithParsedId,
 } from '../authenticate';
-import { User } from '../models';
+import { User, type IUser } from '../models';
 
 const { NODE_ENV, CLIENT_PORT } = process.env;
 const LANDING_PAGE_ROUTE =
   NODE_ENV === 'development' ? `http://localhost:${CLIENT_PORT}/` : '/';
 
 const authRouter = express.Router();
+
+type UserWithId = IUser & { _id: ObjectId };
 
 // Auth
 /**
@@ -55,7 +59,9 @@ authRouter.get(
   async (req, res, next) => {
     try {
       if (!req.user) next(createHttpError(401));
-      const token = getToken(req.user as string);
+
+      const { _id, ...rest } = req.user as UserWithId;
+      const token = getToken({ id: _id.toString(), ...rest });
 
       res
         .cookie('token', token, {
@@ -80,7 +86,9 @@ authRouter.get(
   async (req, res, next) => {
     try {
       if (!req.user) next(createHttpError(401));
-      const token = getToken(req.user as string);
+
+      const { _id, ...rest } = req.user as UserWithId;
+      const token = getToken({ id: _id.toString(), ...rest });
 
       res
         .cookie('token', token, {
@@ -115,10 +123,9 @@ authRouter.get(
  *       401:
  *         description: Not authorized.
  */
-authRouter.get('/token', async (req, res, next) => {
+authRouter.get('/token', verifyUser, async (req, res, next) => {
   try {
-    if (!req.user) next(createHttpError(401));
-    const token = getToken(req.user as string);
+    const token = getToken(req.user as UserWithParsedId);
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -149,7 +156,8 @@ authRouter.get('/token', async (req, res, next) => {
 authRouter.get('/me', verifyUser, async (req, res, next) => {
   try {
     if (!req.user) next(createHttpError(401));
-    const user = await User.findById(req.user);
+
+    const user = await User.findById((req.user as UserWithParsedId).id);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json(user);

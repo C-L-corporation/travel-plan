@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
-import { User } from './models';
+import { type IUser, User } from './models';
 
 const {
   GOOGLE_CLIENT_ID,
@@ -33,8 +33,9 @@ passport.use(
   )
 );
 
-const getToken = (user: string) =>
-  jwt.sign({ user }, SESSION_SECRET ?? 'wonderful-jwt-secret', {
+type UserWithParsedId = IUser & { id: string };
+const getToken = (user: UserWithParsedId) =>
+  jwt.sign(user, SESSION_SECRET ?? 'wonderful-jwt-secret', {
     expiresIn: '1h',
   });
 
@@ -80,7 +81,7 @@ passport.use(
 
         if (!user) throw new Error('Unexpected error while upserting user');
 
-        return done(null, user._id.toString());
+        return done(null, user);
       } catch (err) {
         return done(err as Error);
       }
@@ -120,7 +121,7 @@ passport.use(
           await user.save();
         }
 
-        return done(null, user._id.toString());
+        return done(null, user);
       } catch (err) {
         return done(err as Error);
       }
@@ -134,4 +135,5 @@ export {
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   getToken,
   verifyUser,
+  UserWithParsedId,
 };
