@@ -10,7 +10,7 @@ const {
   GOOGLE_CLIENT_SECRET,
   FACEBOOK_APP_ID,
   FACEBOOK_APP_SECRET,
-  SESSION_SECRET,
+  JWT_SECRET,
 } = process.env;
 
 // JWT passport strategy
@@ -18,7 +18,7 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: SESSION_SECRET ?? 'wonderful-jwt-secret',
+      secretOrKey: JWT_SECRET ?? 'wonderful-jwt-secret',
     },
     async function (jwtPayload, done) {
       try {
@@ -34,8 +34,8 @@ passport.use(
 );
 
 type UserWithParsedId = IUser & { id: string };
-const getToken = (user: UserWithParsedId) =>
-  jwt.sign(user, SESSION_SECRET ?? 'wonderful-jwt-secret', {
+const generateToken = (user: UserWithParsedId) =>
+  jwt.sign(user, JWT_SECRET ?? 'wonderful-jwt-secret', {
     expiresIn: '1h',
   });
 
@@ -133,7 +133,7 @@ export {
   passport,
   GOOGLE_AUTH_CALLBACK_ROUTE,
   FACEBOOK_AUTH_CALLBACK_ROUTE,
-  getToken,
+  generateToken,
   verifyUser,
   UserWithParsedId,
 };

@@ -87,43 +87,19 @@ app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
+const loginRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20, // Maximum number of requests allowed per minute
+});
+
 const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
+  // TODO: save result to db, along with timestamp, user_id, input
   max: 30, // Maximum number of requests allowed per minute
 });
 
-app.use('/auth', apiRateLimiter, authRouter);
+app.use('/auth', loginRateLimiter, authRouter);
 app.use('/plan', apiRateLimiter, planRouter);
-
-const MOCK_DATA = JSON.parse(
-  fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
-);
-app.post('/plan', verifyUser, apiRateLimiter, (req, res) => {
-  const {
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories,
-  } = req.body;
-  console.info(
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories
-  );
-  res.send(MOCK_DATA);
-});
-
-// TODO: remove this route
-app.get('/plan', (_, res) => {
-  res.send(MOCK_DATA);
-});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

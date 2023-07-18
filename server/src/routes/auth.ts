@@ -5,7 +5,7 @@ import type { ObjectId } from 'mongoose';
 import {
   FACEBOOK_AUTH_CALLBACK_ROUTE,
   GOOGLE_AUTH_CALLBACK_ROUTE,
-  getToken,
+  generateToken,
   verifyUser,
   type UserWithParsedId,
 } from '../authenticate';
@@ -61,7 +61,7 @@ authRouter.get(
       if (!req.user) next(createHttpError(401));
 
       const { _id, ...rest } = req.user as UserWithId;
-      const token = getToken({ id: _id.toString(), ...rest });
+      const token = generateToken({ id: _id.toString(), ...rest });
 
       res
         .cookie('token', token, {
@@ -88,7 +88,7 @@ authRouter.get(
       if (!req.user) next(createHttpError(401));
 
       const { _id, ...rest } = req.user as UserWithId;
-      const token = getToken({ id: _id.toString(), ...rest });
+      const token = generateToken({ id: _id.toString(), ...rest });
 
       res
         .cookie('token', token, {
@@ -125,7 +125,7 @@ authRouter.get(
  */
 authRouter.get('/token', verifyUser, async (req, res, next) => {
   try {
-    const token = getToken(req.user as UserWithParsedId);
+    const token = generateToken(req.user as UserWithParsedId);
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
