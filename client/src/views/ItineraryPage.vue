@@ -1,6 +1,7 @@
 <template>
+  <UserNameAndLogout />
   <div class="top">
-    <div>Christine's</div>
+    <div>{{ userName }}'s</div>
     <img class="line" src="/images/line.png" />
     <div class="subtitle">5 DAYS TRIP</div>
     <div>Tokyo Itinerary</div>
@@ -13,10 +14,32 @@
 </template>
 
 <script>
+import axios from 'axios'
 import TimeLine from '../components/TimeLine.vue'
+import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 
 export default {
-  components: { TimeLine }
+  components: { TimeLine, UserNameAndLogout },
+  data() {
+    return {
+      userName: ''
+    }
+  },
+  created() {
+    this.fetchUserName()
+  },
+  methods: {
+    fetchUserName() {
+      axios
+        .get('/api/auth/me')
+        .then((response) => {
+          this.userName = response.data.username
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+  }
 }
 </script>
 

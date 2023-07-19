@@ -1,4 +1,5 @@
 <template>
+  <UserNameAndLogout />
   <div class="page">
     <div class="title">Let's plan !</div>
     <div class="content">
@@ -71,11 +72,13 @@
 <script>
 import TravelStyle from '../components/TravelStyle.vue'
 import ChooseEat from '../components/ChooseEat.vue'
+import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 
 export default {
   components: {
     TravelStyle,
-    ChooseEat
+    ChooseEat,
+    UserNameAndLogout
   }
 }
 </script>
