@@ -6,30 +6,43 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { mapState, mapActions } from 'vuex'
 
 export default {
-  data() {
-    return {
-      userName: ''
-    }
+  computed: {
+    ...mapState('user',['userName'])
   },
   created() {
     this.fetchUserName()
   },
   methods: {
-    fetchUserName() {
-      axios
-        .get('/api/auth/me')
-        .then((response) => {
-          this.userName = response.data.username
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
+    ...mapActions('user', ['fetchUserName'])
   }
 }
+// import axios from 'axios'
+
+// export default {
+//   data() {
+//     return {
+//       userName: ''
+//     }
+//   },
+//   created() {
+//     this.fetchUserName()
+//   },
+//   methods: {
+//     fetchUserName() {
+//       axios
+//         .get('/api/auth/me')
+//         .then((response) => {
+//           this.userName = response.data.username
+//         })
+//         .catch((error) => {
+//           console.error(error)
+//         })
+//     }
+//   }
+// }
 </script>
 
 <style scoped>
