@@ -146,8 +146,7 @@ passport.use(
             user.updateAt = new Date();
             await user.save();
             console.info(
-              `Facebook added to user ${user._id.toString()} new provider`,
-              
+              `Facebook added to user ${user._id.toString()} new provider`
             );
           }
         }
