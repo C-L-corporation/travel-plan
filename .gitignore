@@ -15,6 +15,7 @@ coverage
 *.local
 
 .env
+.yarn
 
 /cypress/videos/
 /cypress/screenshots/
