@@ -74,11 +74,13 @@ authRouter.get(
       const { _id, ...rest } = req.user as UserWithId;
       const token = generateToken({ id: _id.toString(), ...rest });
 
+      console.info("[ID: %s] token generated: %s for %s",  _id.toString(), token);
       res
         .cookie('token', token, {
           sameSite: true,
           secure: true,
           maxAge: 60 * 1000,
+          path: '/planning',
         })
         .clearCookie('connect.sid')
         .redirect(`${LANDING_PAGE_ROUTE}planning`);
@@ -102,11 +104,13 @@ authRouter.get(
       const { _id, ...rest } = req.user as UserWithId;
       const token = generateToken({ id: _id.toString(), ...rest });
 
+      console.info("[ID: %s] token generated: %s for %s",  _id.toString(), token);
       res
         .cookie('token', token, {
           sameSite: true,
           secure: true,
           maxAge: 60 * 1000,
+          path: '/planning',
         })
         .clearCookie('connect.sid')
         .redirect(`${LANDING_PAGE_ROUTE}planning`);

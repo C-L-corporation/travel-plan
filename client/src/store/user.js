@@ -1,4 +1,4 @@
-import api from './api.js'
+import axios from 'axios'
 
 const user = {
   namespaced: true,
@@ -15,7 +15,7 @@ const user = {
   },
   actions: {
     fetchUserName({ commit }) {
-      return api
+      return axios
         .get('/api/auth/me')
         .then((response) => {
           commit('setUserName', response.data.name)
