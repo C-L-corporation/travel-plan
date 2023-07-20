@@ -42,13 +42,16 @@ const generateToken = (user: UserWithParsedId) =>
 
 const verifyUser = passport.authenticate('jwt', { session: false });
 
+if (!GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID not set');
+if (!GOOGLE_CLIENT_SECRET) throw new Error('GOOGLE_CLIENT_SECRET not set');
+
 // Google passport strategy
 const GOOGLE_AUTH_CALLBACK_ROUTE = '/google/callback';
 passport.use(
   new GoogleStrategy(
     {
-      clientID: GOOGLE_CLIENT_ID ?? '',
-      clientSecret: GOOGLE_CLIENT_SECRET ?? '',
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: `/auth${GOOGLE_AUTH_CALLBACK_ROUTE}`,
     },
     async function (accessToken, refreshToken, profile, done) {
@@ -90,13 +93,16 @@ passport.use(
   )
 );
 
+if (!FACEBOOK_APP_ID) throw new Error('FACEBOOK_APP_ID not set');
+if (!FACEBOOK_APP_SECRET) throw new Error('FACEBOOK_APP_SECRET not set');
+
 // Facebook passport strategy
 const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
 passport.use(
   new FacebookStrategy(
     {
-      clientID: FACEBOOK_APP_ID ?? '',
-      clientSecret: FACEBOOK_APP_SECRET ?? '',
+      clientID: FACEBOOK_APP_ID,
+      clientSecret: FACEBOOK_APP_SECRET,
       callbackURL: `/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
       profileFields: ['id', 'displayName', 'photos', 'email'],
     },
