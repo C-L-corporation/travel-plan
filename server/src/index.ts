@@ -93,9 +93,9 @@ const apiRateLimiter = rateLimit({
   // TODO: save result to db, along with timestamp, user_id, input
   max: 30, // Maximum number of requests allowed per minute
 });
-
+app.use(apiRateLimiter);
 app.use('/auth', authRouter);
-app.use('/plan', apiRateLimiter, planRouter);
+app.use('/plan', planRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
