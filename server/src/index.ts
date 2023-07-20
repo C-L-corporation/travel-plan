@@ -8,25 +8,76 @@ import session from 'express-session';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import csrf from 'csurf';
-import cookieParser from 'cookie-parser';
+import { connect } from 'mongoose';
 
 dotenv.config();
-if (process.env.NODE_ENV === 'development') dotenv.config({ path: path.join(__dirname, '../../.env.development') });
+if (process.env.NODE_ENV === 'development')
+  dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
-import { passport, authenticateMiddleware } from './authentication';
-import { authRouter } from './routes';
+import { passport } from './authenticate';
+import { authRouter, planRouter } from './routes';
 
-
-const { PORT, NODE_ENV, SESSION_SECRET, SERVER_PORT } = process.env;
+const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
+  process.env;
 
 const app = express();
 
+// Connect to MongoDB
+connect(MONGODB_URL ?? '')
+  .then(() => {
+    console.info('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+if (NODE_ENV === 'development') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const swaggerUi = require('swagger-ui-express');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const swaggerJsdoc = require('swagger-jsdoc');
+
+  const options = {
+    definition: {
+      openapi: '3.1.0',
+      info: {
+        title: 'Travel plan API',
+        version: '1.0.0',
+      },
+    },
+    apis: [
+      path.resolve(__dirname, '../docs/components.yaml'),
+      `${__dirname}/routes/*.ts`,
+    ],
+  };
+
+  const specs = swaggerJsdoc(options);
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  console.info('Swagger UI available at /api-docs');
+}
+
+const server = spdy.createServer(
+  {
+    key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
+  },
+  app
+);
+
+const port = PORT ?? SERVER_PORT ?? 8000;
+server.listen(port, () => {
+  console.info('[Server] Listening on port: ' + port + '.');
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
+if (!SESSION_SECRET) throw new Error('SESSION_SECRET not set');
 app.use(
   session({
-    secret: SESSION_SECRET as string,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },
@@ -35,61 +86,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const options = {
-  key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
-};
-const server = spdy.createServer(options, app);
-
-const port = (PORT ?? SERVER_PORT) as string;
-server.listen(port, () => {
-  console.log('[Server] Listening on port: ' + port + '.');
-});
-
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
+
+const loginRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20, // Maximum number of requests allowed per minute
+});
 
 const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
+  // TODO: save result to db, along with timestamp, user_id, input
   max: 30, // Maximum number of requests allowed per minute
 });
 
-app.use(cookieParser());
-const csrfProtection = csrf({ cookie: true });
-app.get('/csrf-token', csrfProtection, (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
-
-app.use('/auth', apiRateLimiter, authRouter);
-
-const MOCK_DATA = JSON.parse(
-  fs.readFileSync(path.join(__dirname, 'mock_plan.json'), 'utf8')
-);
-app.post('/plan', authenticateMiddleware, apiRateLimiter, (req, res) => {
-  const {
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories,
-  } = req.body;
-  console.log(
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories
-  );
-  res.send(MOCK_DATA);
-});
-
-// TODO: remove this route
-app.get('/plan', (_, res) => {
-  res.send(MOCK_DATA);
-});
+app.use('/auth', loginRateLimiter, authRouter);
+app.use('/plan', apiRateLimiter, planRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

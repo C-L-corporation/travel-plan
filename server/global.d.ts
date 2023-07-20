@@ -7,6 +7,9 @@ declare namespace NodeJS {
     FACEBOOK_APP_SECRET?: string;
     CLIENT_PORT?: string;
     SERVER_PORT?: string;
+    PORT?: string; // port for production
     SESSION_SECRET: string;
+    JWT_SECRET: string;
+    MONGODB_URL: string;
   }
 }
