@@ -22,8 +22,9 @@ const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
 
 const app = express();
 
+if (!MONGODB_URL) throw new Error('MONGODB_URL not set');
 // Connect to MongoDB
-connect(MONGODB_URL ?? '')
+connect(MONGODB_URL)
   .then(() => {
     console.info('Connected to MongoDB');
   })
@@ -70,7 +71,6 @@ server.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
@@ -88,19 +88,14 @@ app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
 
-const loginRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 20, // Maximum number of requests allowed per minute
-});
-
 const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   // TODO: save result to db, along with timestamp, user_id, input
   max: 30, // Maximum number of requests allowed per minute
 });
-
-app.use('/auth', loginRateLimiter, authRouter);
-app.use('/plan', apiRateLimiter, planRouter);
+app.use(apiRateLimiter);
+app.use('/auth', authRouter);
+app.use('/plan', planRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

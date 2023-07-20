@@ -1,11 +1,18 @@
 import express from 'express';
-import { verifyUser } from '../authenticate';
 import fs from 'fs';
 import path from 'path';
+import { rateLimit } from 'express-rate-limit';
+import { verifyUser } from '../authenticate';
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
 );
+
+const gptRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5,
+  message: 'Too many requests from this IP, please try again in an hour.',
+});
 
 const planRouter = express.Router();
 planRouter.use(express.json());
@@ -50,7 +57,7 @@ planRouter.use(express.json());
  *       400:
  *         description: Bad request. Days must be between 1 and 7.
  */
-planRouter.post('/', verifyUser, (req, res) => {
+planRouter.post('/', gptRateLimiter, verifyUser, (req, res) => {
   const {
     hotelLocation,
     days,
