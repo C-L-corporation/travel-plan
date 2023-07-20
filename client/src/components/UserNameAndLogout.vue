@@ -10,7 +10,7 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   computed: {
-    ...mapState('user',['userName'])
+    ...mapState('user', ['userName'])
   },
   created() {
     this.fetchUserName()
@@ -19,30 +19,6 @@ export default {
     ...mapActions('user', ['fetchUserName'])
   }
 }
-// import axios from 'axios'
-
-// export default {
-//   data() {
-//     return {
-//       userName: ''
-//     }
-//   },
-//   created() {
-//     this.fetchUserName()
-//   },
-//   methods: {
-//     fetchUserName() {
-//       axios
-//         .get('/api/auth/me')
-//         .then((response) => {
-//           this.userName = response.data.username
-//         })
-//         .catch((error) => {
-//           console.error(error)
-//         })
-//     }
-//   }
-// }
 </script>
 
 <style scoped>
