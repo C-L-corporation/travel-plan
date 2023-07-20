@@ -14,7 +14,7 @@ dotenv.config();
 if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
-import { passport, verifyUser } from './authenticate';
+import { passport } from './authenticate';
 import { authRouter, planRouter } from './routes';
 
 const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
@@ -74,9 +74,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(helmet());
+if (!SESSION_SECRET) throw new Error('SESSION_SECRET not set');
 app.use(
   session({
-    secret: SESSION_SECRET ?? 'wonderful-session-secret',
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true },

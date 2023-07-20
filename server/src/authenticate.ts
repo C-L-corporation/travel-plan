@@ -14,11 +14,12 @@ const {
 } = process.env;
 
 // JWT passport strategy
+if (!JWT_SECRET) throw new Error('JWT_SECRET not set');
 passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: JWT_SECRET ?? 'wonderful-jwt-secret',
+      secretOrKey: JWT_SECRET,
     },
     async function (jwtPayload, done) {
       try {
@@ -35,7 +36,7 @@ passport.use(
 
 type UserWithParsedId = IUser & { id: string };
 const generateToken = (user: UserWithParsedId) =>
-  jwt.sign(user, JWT_SECRET ?? 'wonderful-jwt-secret', {
+  jwt.sign(user, JWT_SECRET, {
     expiresIn: '1h',
   });
 
