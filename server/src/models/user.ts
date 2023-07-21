@@ -2,23 +2,27 @@ import { Schema, model } from 'mongoose';
 
 type IUser = {
   name: string;
-  email?: string;
-  photo?: string;
-  providers: ReadonlyArray<{ provider: string; userId: string }>;
+  email: string;
+  photo: string;
+  providers: { provider: string; userId: string }[];
   isAdmin: boolean;
-  planTriggers: ReadonlyArray<Date>;
+  planTriggeredAt: ReadonlyArray<Date>;
+  createdAt: Date;
+  updateAt: Date;
 };
 
 const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  photo: { type: String },
+  photo: { type: String, default: null },
   providers: { type: [{ provider: String, userId: String }], default: [] },
   isAdmin: { type: Boolean, default: false },
-  planTriggers: {
+  planTriggeredAt: {
     type: [Date],
     default: [],
   },
+  createdAt: { type: Date, default: new Date() },
+  updateAt: { type: Date, default: null },
 });
 
 const User = model<IUser>('User', userSchema);

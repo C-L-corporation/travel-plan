@@ -92,6 +92,7 @@ const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   // TODO: save result to db, along with timestamp, user_id, input
   max: 30, // Maximum number of requests allowed per minute
+  message: 'Hold on, please try again in a minute.',
 });
 app.use(apiRateLimiter);
 app.use('/auth', authRouter);

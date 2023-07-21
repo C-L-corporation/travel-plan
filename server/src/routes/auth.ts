@@ -24,7 +24,7 @@ type UserWithId = IUser & { _id: ObjectId };
 const authRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5,
-  message: 'Too many requests from this IP, please try again in an hour.',
+  message: 'Login too many times, please try again in a minute.',
 });
 
 // Auth
@@ -74,7 +74,7 @@ authRouter.get(
       const { _id, ...rest } = req.user as UserWithId;
       const token = generateToken({ id: _id.toString(), ...rest });
 
-      console.info("[ID: %s] token generated: %s for %s",  _id.toString(), token);
+      console.info(`[ID: ${_id.toString()}] token generated: ${token}`);
       res
         .cookie('token', token, {
           sameSite: true,
@@ -104,12 +104,18 @@ authRouter.get(
       const { _id, ...rest } = req.user as UserWithId;
       const token = generateToken({ id: _id.toString(), ...rest });
 
-      console.info("[ID: %s] token generated: %s for %s",  _id.toString(), token);
+      console.info(
+        `[ID: ${_id.toString()}] token generated: ${
+          NODE_ENV === 'development'
+            ? token
+            : `${token.slice(0, 3)}...${token.slice(-3)}`
+        }`
+      );
       res
         .cookie('token', token, {
           sameSite: true,
           secure: true,
-          maxAge: 60 * 1000,
+          maxAge: 2 * 60 * 1000,
           path: '/planning',
         })
         .clearCookie('connect.sid')

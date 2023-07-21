@@ -9,9 +9,11 @@ const MOCK_DATA = JSON.parse(
 );
 
 const gptRateLimiter = rateLimit({
+  // TODO: change this to 1 hour
   windowMs: 60 * 1000, // 1 minute
+  // TODO: change this to 3
   max: 5,
-  message: 'Too many requests from this IP, please try again in an hour.',
+  message: 'Call GPT too many times, please try again in a minute.',
 });
 
 const planRouter = express.Router();

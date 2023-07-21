@@ -65,25 +65,32 @@ passport.use(
                 $elemMatch: { userId: profile.id, provider: profile.provider },
               },
             };
-
-        const update = {
-          $setOnInsert: {
+        let user = await User.findOne(query);
+        if (!user) {
+          user = new User({
             name: profile.displayName,
+            providers: [{ userId: profile.id, provider: profile.provider }],
             photo: profile.photos?.[0]?.value ?? null,
             email: profile.emails?.[0].value ?? null,
-          },
-          $addToSet: {
-            providers: { userId: profile.id, provider: profile.provider },
-          },
-        };
-
-        // Set the upsert option to true to create a new document if no document matches the query
-        const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
-        // The user should always exist after upserting
-        const user = await User.findOneAndUpdate(query, update, options);
-
-        if (!user) throw new Error('Unexpected error while upserting user');
+          });
+          await user.save();
+          console.info(
+            'New user from Google (user id: %s) created',
+            profile.id
+          );
+        } else {
+          if (user.providers.every((p) => p.userId !== profile.id)) {
+            user.providers.push({
+              userId: profile.id,
+              provider: profile.provider,
+            });
+            user.updateAt = new Date();
+            await user.save();
+            console.info(
+              `Google added to user ${user._id.toString()} new provider`
+            );
+          }
+        }
 
         return done(null, user);
       } catch (err) {
@@ -126,6 +133,23 @@ passport.use(
             email: profile.emails?.[0].value ?? null,
           });
           await user.save();
+          console.info(
+            'New user from Facebook (user id: %s) created',
+            profile.id
+          );
+        } else {
+          if (user.providers.every((p) => p.userId !== profile.id)) {
+            user.providers.push({
+              userId: profile.id,
+              provider: profile.provider,
+            });
+            user.updateAt = new Date();
+            await user.save();
+            console.info(
+              `Facebook added to user ${user._id.toString()} new provider`,
+              
+            );
+          }
         }
 
         return done(null, user);
