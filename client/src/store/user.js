@@ -11,6 +11,9 @@ const user = {
   mutations: {
     setUserName(state, userName) {
       state.userName = userName
+    },
+    clearUserData(state) {
+      state.userName = ''
     }
   },
   actions: {
@@ -24,8 +27,13 @@ const user = {
         .catch((error) => {
           console.error(error)
         })
+    },
+    logoutUser({ commit }) {
+      axios.defaults.headers.common['Authorization'] = '';
+      commit('clearUserData');      
+      console.log('name', this.userName)
     }
-  }
+}
 }
 
 export default user

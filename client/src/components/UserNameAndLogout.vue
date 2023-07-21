@@ -17,10 +17,11 @@ export default {
     this.fetchUserName()
   },
   methods: {
-    ...mapActions('user', ['fetchUserName']),
+    ...mapActions('user', ['fetchUserName','logoutUser']),
     logout() {
-      axios.defaults.headers.common = {}
-      this.$router.push('/')
+      this.logoutUser;
+     
+     
     }
   }
 }
