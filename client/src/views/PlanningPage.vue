@@ -73,12 +73,21 @@
 import TravelStyle from '../components/TravelStyle.vue'
 import ChooseEat from '../components/ChooseEat.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+axios.defaults.withCredentials = true
 
 export default {
   components: {
     TravelStyle,
     ChooseEat,
     UserNameAndLogout
+  },
+  created() {
+    const token = Cookies.get('token')
+    axios.defaults.headers.common = { Authorization: `bearer ${token}` }
+    Cookies.remove('token', { path: '/planning' })
+    
   }
 }
 </script>
