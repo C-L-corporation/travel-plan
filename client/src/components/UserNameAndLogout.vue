@@ -1,12 +1,13 @@
 <template>
   <div class="user">
     <div>Hello, {{ userName }}!</div>
-    <a class="logout" href="">Log out</a>
+    <div class="logout" @click="logout">Log out</div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import axios from 'axios'
 
 export default {
   computed: {
@@ -16,7 +17,11 @@ export default {
     this.fetchUserName()
   },
   methods: {
-    ...mapActions('user', ['fetchUserName'])
+    ...mapActions('user', ['fetchUserName']),
+    logout() {
+      axios.defaults.headers.common = {}
+      this.$router.push('/')
+    }
   }
 }
 </script>
@@ -34,8 +39,8 @@ export default {
 
 .logout {
   color: #b4b17e;
+  cursor: pointer;
 }
-
 .logout:hover {
   color: #3d8994;
 }

@@ -14,31 +14,14 @@
 </template>
 
 <script>
-import axios from 'axios'
 import TimeLine from '../components/TimeLine.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
+import { mapState } from 'vuex'
 
 export default {
   components: { TimeLine, UserNameAndLogout },
-  data() {
-    return {
-      userName: ''
-    }
-  },
-  created() {
-    this.fetchUserName()
-  },
-  methods: {
-    fetchUserName() {
-      axios
-        .get('/api/auth/me')
-        .then((response) => {
-          this.userName = response.data.username
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
+  computed: {
+    ...mapState('user', ['userName'])
   }
 }
 </script>
