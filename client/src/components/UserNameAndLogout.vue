@@ -19,9 +19,8 @@ export default {
   methods: {
     ...mapActions('user', ['fetchUserName','logoutUser']),
     logout() {
-      this.logoutUser;
-     
-     
+      this.logoutUser();
+      this.$router.push('/');
     }
   }
 }

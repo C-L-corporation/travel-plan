@@ -31,7 +31,6 @@ const user = {
     logoutUser({ commit }) {
       axios.defaults.headers.common['Authorization'] = '';
       commit('clearUserData');      
-      console.log('name', this.userName)
     }
 }
 }
