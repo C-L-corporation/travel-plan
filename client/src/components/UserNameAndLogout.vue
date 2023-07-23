@@ -8,21 +8,44 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export default {
   computed: {
-    ...mapState('user', ['userName'])
+    ...mapState('user', ['userName']),
+
   },
-  created() {
-    this.fetchUserName()
+  async created() {
+    try {
+      if (this.$route.path === '/planning') {
+        const token = Cookies.get('token')
+        axios.defaults.headers.common = { Authorization: `bearer ${token}` }
+        Cookies.remove('token', { path: '/planning' })
+        await this.fetchUserName()
+      }
+
+      if (this.userName === null) {
+        this.$router.push('/')
+      }
+    } catch (error) {
+      console.error('error occured', error)
+    }
   },
+
   methods: {
-    ...mapActions('user', ['fetchUserName','logoutUser']),
+    ...mapActions('user', ['fetchUserName', 'logoutUser']),
     logout() {
       this.logoutUser();
-      this.$router.push('/');
     }
-  }
+  },
+  watch: {
+    userName(newName) {
+
+      if (!newName) {
+        this.$router.push('/')
+      }
+    }
+  },
 }
 </script>
 
@@ -41,6 +64,7 @@ export default {
   color: #b4b17e;
   cursor: pointer;
 }
+
 .logout:hover {
   color: #3d8994;
 }

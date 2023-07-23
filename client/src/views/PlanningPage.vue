@@ -5,47 +5,28 @@
     <div class="content">
       <div class="contentpaper">
         <div>Place you want to explore</div>
-        <v-select
-          class="selectors"
-          label="Choose a place"
-          :items="['Tokyo', 'Los Angeles', 'Paris']"
-          variant="solo"
-        ></v-select>
+        <v-select class="selectors" label="Choose a place" :items="['Tokyo', 'Los Angeles', 'Paris']"
+          variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Days of trip</div>
-        <v-select
-          class="selectors"
-          label="Days"
-          :items="['1', '2', '3', '4', '5', '6', '7']"
-          variant="solo"
-        ></v-select>
+        <v-select class="selectors" label="Days" :items="['1', '2', '3', '4', '5', '6', '7']" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Transportation</div>
-        <v-select
-          class="selectors"
-          label="By"
-          :items="['Car', 'Public Transportation']"
-          variant="solo"
-        ></v-select>
+        <v-select class="selectors" label="By" :items="['Car', 'Public Transportation']" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Hotel location (expectation)</div>
-        <v-select
-          class="selectors"
-          label="Choose a place"
-          :items="[
-            'Shinjuku Area (West)',
-            'Minato Area (South)',
-            'Chuo Area (East)',
-            'Taito Area (North)'
-          ]"
-          variant="solo"
-        ></v-select>
+        <v-select class="selectors" label="Choose a place" :items="[
+          'Shinjuku Area (West)',
+          'Minato Area (South)',
+          'Chuo Area (East)',
+          'Taito Area (North)'
+        ]" variant="solo"></v-select>
       </div>
 
       <div class="choosing">
@@ -73,21 +54,13 @@
 import TravelStyle from '../components/TravelStyle.vue'
 import ChooseEat from '../components/ChooseEat.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
-import axios from 'axios'
-import Cookies from 'js-cookie'
-axios.defaults.withCredentials = true
+
 
 export default {
   components: {
     TravelStyle,
     ChooseEat,
     UserNameAndLogout
-  },
-  created() {
-    const token = Cookies.get('token')
-    axios.defaults.headers.common = { Authorization: `bearer ${token}` }
-    Cookies.remove('token', { path: '/planning' })
-    
   }
 }
 </script>
@@ -111,6 +84,7 @@ export default {
   color: #3b342a;
   margin-top: 80px;
 }
+
 .content {
   font-family: 'Handlee', cursive;
   font-size: 25px;

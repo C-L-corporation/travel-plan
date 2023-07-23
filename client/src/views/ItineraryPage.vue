@@ -22,6 +22,11 @@ export default {
   components: { TimeLine, UserNameAndLogout },
   computed: {
     ...mapState('user', ['userName'])
+  },
+  created() {
+    if (this.userName === null){
+      this.$router.push('/')
+    }
   }
 }
 </script>

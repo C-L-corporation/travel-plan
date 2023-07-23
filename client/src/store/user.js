@@ -5,7 +5,7 @@ const user = {
 
   state() {
     return {
-      userName: ''
+      userName: null
     }
   },
   mutations: {
@@ -13,7 +13,7 @@ const user = {
       state.userName = userName
     },
     clearUserData(state) {
-      state.userName = ''
+      state.userName = null
     }
   },
   actions: {
@@ -23,7 +23,6 @@ const user = {
         .then((response) => {
           commit('setUserName', response.data.name)
         })
-
         .catch((error) => {
           console.error(error)
         })
