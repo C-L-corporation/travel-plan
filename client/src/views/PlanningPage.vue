@@ -55,7 +55,6 @@ import TravelStyle from '../components/TravelStyle.vue'
 import ChooseEat from '../components/ChooseEat.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 
-
 export default {
   components: {
     TravelStyle,
