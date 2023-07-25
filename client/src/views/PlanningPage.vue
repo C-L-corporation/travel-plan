@@ -5,28 +5,25 @@
     <div class="content">
       <div class="contentpaper">
         <div>Place you want to explore</div>
-        <v-select class="selectors" label="Choose a place" :items="['Tokyo', 'Los Angeles', 'Paris']"
+        <v-select class="selectors" label="Choose a place" v-model="selectPlace" :items="places"
           variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Days of trip</div>
-        <v-select class="selectors" label="Days" :items="['1', '2', '3', '4', '5', '6', '7']" variant="solo"></v-select>
+        <v-select class="selectors" label="Days" v-model="selectDay" :items="days" variant="solo"></v-select>
+
       </div>
 
       <div class="contentpaper">
         <div>Transportation</div>
-        <v-select class="selectors" label="By" :items="['Car', 'Public Transportation']" variant="solo"></v-select>
+        <v-select class="selectors" label="By" v-model="selectTran" :items="transportations" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Hotel location (expectation)</div>
-        <v-select class="selectors" label="Choose a place" :items="[
-          'Shinjuku Area (West)',
-          'Minato Area (South)',
-          'Chuo Area (East)',
-          'Taito Area (North)'
-        ]" variant="solo"></v-select>
+        <v-select class="selectors" label="Choose a place" v-model="selectHotel" :items="hotels"
+          variant="solo"></v-select>
       </div>
 
       <div class="choosing">
@@ -56,6 +53,24 @@ import ChooseEat from '../components/ChooseEat.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 
 export default {
+  data() {
+    return {
+      selectPlace: null,
+      places: ['Tokyo', 'Los Angeles', 'Paris'],
+      selectDay: null,
+      days: ['1', '2', '3', '4', '5', '6', '7'],
+      selectTran: null,
+      transportations: ['Car', 'Public Transportation'],
+      selectHotel: null,
+      hotels: [
+        'Shinjuku Area (West)',
+        'Minato Area (South)',
+        'Chuo Area (East)',
+        'Taito Area (North)'
+      ],
+
+    }
+  },
   components: {
     TravelStyle,
     ChooseEat,
