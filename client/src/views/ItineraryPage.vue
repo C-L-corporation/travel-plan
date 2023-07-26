@@ -22,10 +22,10 @@ export default {
   components: { TimeLine, UserNameAndLogout },
   computed: {
     ...mapState('user', ['userName']),
-    ...mapGetters('user', ['isLoggedIn'])
+    ...mapGetters('user', ['isLoggedIn']),
   },
   created() {
-    if (!isLoggedIn) {
+    if (!this.isLoggedIn) {
       this.$router.push('/')
     }
   }

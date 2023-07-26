@@ -39,8 +39,10 @@
 
 <script>
 import axios from 'axios'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
+
   data() {
     return {
       scheduleDetail: null,
@@ -48,8 +50,13 @@ export default {
         TRAIN: 'Taking the train',
         WALKING: 'Walking',
         CAR: 'Driving'
-      }
+      },
     }
+  },
+
+  computed: {
+    ...mapState('data', ['selectedData']),
+    ...mapGetters('data', ['getSelectedData'])
   },
 
   mounted() {
@@ -58,18 +65,27 @@ export default {
 
   methods: {
     fetchData() {
+      const {
+        place,
+        day,
+        tran,
+        hotel,
+        site,
+        food
+      } = this.selectedData;
+
       axios
         .post('/api/plan', {
-          nation: "string",
-          city: "string",
-          days: 0,
-          transportation: "string",
-          hotelLocation: "string",
-          placeOfInterest: "string",
-          foodCategories: "string"
+          nation: place,
+          city: place,
+          days: day,
+          transportation: tran,
+          hotelLocation: hotel,
+          placeOfInterest: site,
+          foodCategories: food,
         })
         .then((response) => {
-          console.log(response)
+          console.log('timeline', response)
           this.scheduleDetail = response.data
         })
         .catch((error) => {

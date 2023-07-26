@@ -40,7 +40,6 @@ export default {
   },
   watch: {
     isLoggedIn(loggedIn) {
-
       if (!loggedIn) {
         this.$router.push('/')
       }

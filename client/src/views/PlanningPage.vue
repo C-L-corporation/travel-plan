@@ -21,24 +21,27 @@
       </div>
 
       <div class="contentpaper">
-        <div>Hotel location (expectation)</div>
+        <div>Hotel location</div>
         <v-select class="selectors" label="Choose a place" v-model="selectHotel" :items="hotels"
           variant="solo"></v-select>
       </div>
 
-      <div class="choosing">
+      <div class="contentpaper">
         <div>What you want to See</div>
-        <TravelStyle />
+        <v-select class="selectors" v-model="selectSites" :items="sites" variant="solo" label="Sites(multiple)"
+          multiple></v-select>
       </div>
 
-      <div class="choosing">
+      <div class="contentpaper">
         <div>What you want to Eat</div>
-        <ChooseEat />
+        <v-select class="selectors" v-model="selectFoods" :items="foods" variant="solo" label="Foods(multiple)"
+          multiple></v-select>
       </div>
     </div>
 
+
     <router-link to="/itinerary">
-      <v-btn class="button" size="x-large">Create !</v-btn>
+      <v-btn class="button" size="x-large" @click="createItinerary">Create !</v-btn>
     </router-link>
 
     <img class="suitcase" src="/images/suitcase.png" />
@@ -48,11 +51,14 @@
 </template>
 
 <script>
-import TravelStyle from '../components/TravelStyle.vue'
-import ChooseEat from '../components/ChooseEat.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
+import { mapMutations } from 'vuex'
 
 export default {
+  components: {
+    UserNameAndLogout
+  },
+
   data() {
     return {
       selectPlace: null,
@@ -68,13 +74,28 @@ export default {
         'Chuo Area (East)',
         'Taito Area (North)'
       ],
-
+      selectSites: null,
+      sites: ['Shopping', 'Historic Site', 'Nature', 'Museum', 'Aqurium', 'Animals', 'Kids'],
+      selectFoods: null,
+      foods: ['Noodle', 'BBQ', 'Sushi', 'Food', 'Sashimi', 'Hotpot', 'Dessert', 'Alcohol'],
     }
   },
-  components: {
-    TravelStyle,
-    ChooseEat,
-    UserNameAndLogout
+
+
+  methods: {
+    ...mapMutations('data', ['setSelectedData']),
+    createItinerary() {
+      const selectedData = {
+        place: this.selectPlace,
+        day: this.selectDay,
+        tran: this.selectTran,
+        hotel: this.selectHotel,
+        site: this.selectSites,
+        food: this.selectFoods
+      };
+      console.log(this.selectSites)
+      this.setSelectedData(selectedData);
+    },
   }
 }
 </script>
@@ -125,7 +146,12 @@ export default {
   align-items: center;
 }
 
-.choosing {
+.selectors {
+  width: 300px;
+  height: 100px;
+}
+
+/* .choosing {
   background-image: url('/images/note.png');
   background-position-x: 60%;
   background-position-y: 7%;
@@ -138,7 +164,7 @@ export default {
   align-items: center;
   gap: 30px;
   margin-top: 20px;
-}
+} */
 
 .button {
   margin-top: 100px;
@@ -149,11 +175,8 @@ export default {
   background-color: #3d8994;
 }
 
-.selectors {
-  width: 300px;
-  height: 100px;
-}
 
+/* images */
 .suitcase {
   position: absolute;
   bottom: 10px;
