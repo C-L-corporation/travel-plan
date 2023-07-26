@@ -1,19 +1,12 @@
 <template>
   <v-container class="time-table">
     <v-row v-for="days in scheduleDetail" :key="days.day">
-      <v-col cols="2" class="day"
-        >DAY <br />
-        {{ days.day }}</v-col
-      >
+      <v-col cols="2" class="day">DAY <br />
+        {{ days.day }}</v-col>
       <v-col cols="7">
         <v-timeline side="end" align="start">
-          <v-timeline-item
-            size="x-small"
-            class="time-line"
-            v-for="(schedule, index) in days.schedule"
-            :key="schedule.id"
-            :dot-color="getDotColor(index)"
-          >
+          <v-timeline-item size="x-small" class="time-line" v-for="(schedule, index) in days.schedule" :key="schedule.id"
+            :dot-color="getDotColor(index)">
             <v-row no-gutters class="d-flex dot">
               <v-col cols="2" class="time me-2">
                 {{ formatTime(schedule.startAt) }} - {{ formatTime(schedule.endAt) }}
@@ -25,17 +18,9 @@
                   {{ schedule.location }}
                 </div>
 
-                <div
-                  class="route"
-                  v-for="transport in schedule.transportation"
-                  :key="transport.type"
-                >
+                <div class="route" v-for="transport in schedule.transportation" :key="transport.type">
                   >>><v-icon v-if="transport.type === 'TRAIN'" size="small" icon="mdi-train" />
-                  <v-icon
-                    v-else-if="transport.type === 'WALKING'"
-                    size="small"
-                    icon="mdi-shoe-print"
-                  />
+                  <v-icon v-else-if="transport.type === 'WALKING'" size="small" icon="mdi-shoe-print" />
                   <v-icon v-else size="small" icon="mdi-car" />
                   {{ TRANSPORTATION_TYPE_MAP[transport.type] }} from {{ transport.from }} to
                   {{ transport.to }} for {{ formatDuration(transport.duration) }}.
@@ -54,8 +39,10 @@
 
 <script>
 import axios from 'axios'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
+
   data() {
     return {
       scheduleDetail: null,
@@ -63,8 +50,13 @@ export default {
         TRAIN: 'Taking the train',
         WALKING: 'Walking',
         CAR: 'Driving'
-      }
+      },
     }
+  },
+
+  computed: {
+    ...mapState('data', ['selectedData']),
+    ...mapGetters('data', ['getSelectedData'])
   },
 
   mounted() {
@@ -73,10 +65,27 @@ export default {
 
   methods: {
     fetchData() {
+      const {
+        place,
+        day,
+        tran,
+        hotel,
+        site,
+        food
+      } = this.selectedData;
+
       axios
-        .get('/api/plan', { headers: { 'Content-Type': 'application/json' } })
+        .post('/api/plan', {
+          nation: place,
+          city: place,
+          days: day,
+          transportation: tran,
+          hotelLocation: hotel,
+          placeOfInterest: site,
+          foodCategories: food,
+        })
         .then((response) => {
-          console.log(response)
+          console.log('timeline', response)
           this.scheduleDetail = response.data
         })
         .catch((error) => {
@@ -115,6 +124,7 @@ export default {
   color: #3d8994;
   padding-top: 40px;
 }
+
 .image-position {
   text-align: right;
 }

@@ -16,6 +16,12 @@ const user = {
       state.userName = null
     }
   },
+
+  getters: {
+    isLoggedIn(state) {
+      return state.userName !== null;
+    }
+  },
   actions: {
     fetchUserName({ commit }) {
       return axios

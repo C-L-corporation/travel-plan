@@ -6,14 +6,14 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
 export default {
   computed: {
     ...mapState('user', ['userName']),
-
+    ...mapGetters('user', ['isLoggedIn'])
   },
   async created() {
     try {
@@ -24,7 +24,7 @@ export default {
         await this.fetchUserName()
       }
 
-      if (this.userName === null) {
+      if (!this.isLoggedIn) {
         this.$router.push('/')
       }
     } catch (error) {
@@ -39,9 +39,8 @@ export default {
     }
   },
   watch: {
-    userName(newName) {
-
-      if (!newName) {
+    isLoggedIn(loggedIn) {
+      if (!loggedIn) {
         this.$router.push('/')
       }
     }

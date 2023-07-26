@@ -16,15 +16,16 @@
 <script>
 import TimeLine from '../components/TimeLine.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   components: { TimeLine, UserNameAndLogout },
   computed: {
-    ...mapState('user', ['userName'])
+    ...mapState('user', ['userName']),
+    ...mapGetters('user', ['isLoggedIn']),
   },
   created() {
-    if (this.userName === null){
+    if (!this.isLoggedIn) {
       this.$router.push('/')
     }
   }
@@ -61,6 +62,7 @@ export default {
   top: -50px;
   right: 150px;
 }
+
 .bagcoffee {
   position: absolute;
   bottom: -300px;
