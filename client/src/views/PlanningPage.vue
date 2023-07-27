@@ -28,13 +28,13 @@
 
       <div class="contentpaper">
         <div>What you want to See</div>
-        <v-select class="selectors" v-model="selectSites" :items="sites" variant="solo" label="Sites(multiple)"
+        <v-select class="selectors" label="Sites(multiple)" v-model="selectSites" :items="sites" variant="solo"
           multiple></v-select>
       </div>
 
       <div class="contentpaper">
         <div>What you want to Eat</div>
-        <v-select class="selectors" v-model="selectFoods" :items="foods" variant="solo" label="Foods(multiple)"
+        <v-select class="selectors" label="Foods(multiple)" v-model="selectFoods" :items="foods" variant="solo"
           multiple></v-select>
       </div>
     </div>
@@ -61,23 +61,49 @@ export default {
 
   data() {
     return {
-      selectPlace: null,
-      places: ['Tokyo', 'Los Angeles', 'Paris'],
-      selectDay: null,
+      selectPlace: 'Tokyo',
+      places: ['Tokyo'],
+      selectDay: 1,
       days: ['1', '2', '3', '4', '5', '6', '7'],
-      selectTran: null,
+      selectTran: 'Public Transportation',
       transportations: ['Car', 'Public Transportation'],
-      selectHotel: null,
+      selectHotel: 'Shinjuku Area (West)',
       hotels: [
         'Shinjuku Area (West)',
         'Minato Area (South)',
         'Chuo Area (East)',
         'Taito Area (North)'
       ],
-      selectSites: null,
-      sites: ['Shopping', 'Historic Site', 'Nature', 'Museum', 'Aqurium', 'Animals', 'Kids'],
-      selectFoods: null,
-      foods: ['Noodle', 'BBQ', 'Sushi', 'Food', 'Sashimi', 'Hotpot', 'Dessert', 'Alcohol'],
+      selectSites: ['Random'],
+      sites: ['Shopping', 'Historic Site', 'Nature', 'Museum', 'Aqurium', 'Animals'],
+      selectFoods: ['Random'],
+      foods: ['Ramen', 'Udon', 'Japanese BBQ', 'Sushi', 'Sashimi', 'Hotpot', 'Dessert', 'Alcohol'],
+    }
+  },
+
+  watch: {
+    selectSites(site) {
+      if (site.length === 0) {
+        setTimeout(() => {
+          this.selectSites = ['Random'];
+        }, 0);
+      } else if (site.length > 1 && site.includes('Random')) {
+        setTimeout(() => {
+          this.selectSites = site.filter(item => item !== 'Random');
+        }, 0);
+      }
+      console.log('planning', site)
+    },
+    selectFoods(food) {
+      if (food.length === 0) {
+        setTimeout(() => {
+          this.selectFoods = ['Random'];
+        }, 0);
+      } else if (food.length > 1 && food.includes('Random')) {
+        setTimeout(() => {
+          this.selectFoods = food.filter(item => item !== 'Random')
+        }, 0);
+      }
     }
   },
 
@@ -93,9 +119,8 @@ export default {
         site: this.selectSites,
         food: this.selectFoods
       };
-      console.log(this.selectSites)
       this.setSelectedData(selectedData);
-    },
+    }
   }
 }
 </script>
