@@ -5,36 +5,34 @@
     <div class="content">
       <div class="contentpaper">
         <div>Place you want to explore</div>
-        <v-select class="selectors" label="Choose a place" v-model="selectPlace" :items="places"
-          variant="solo"></v-select>
+        <v-select class="selectors" v-model="selectPlace" :items="places" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Days of trip</div>
-        <v-select class="selectors" label="Days" v-model="selectDay" :items="days" variant="solo"></v-select>
+        <v-select class="selectors" v-model="selectDay" :items="days" variant="solo"></v-select>
 
       </div>
 
       <div class="contentpaper">
         <div>Transportation</div>
-        <v-select class="selectors" label="By" v-model="selectTran" :items="transportations" variant="solo"></v-select>
+        <v-select class="selectors" v-model="selectTran" :items="transportations" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>Hotel location</div>
-        <v-select class="selectors" label="Choose a place" v-model="selectHotel" :items="hotels"
-          variant="solo"></v-select>
+        <v-select class="selectors" v-model="selectHotel" :items="hotels" variant="solo"></v-select>
       </div>
 
       <div class="contentpaper">
         <div>What you want to See</div>
-        <v-select class="selectors" label="Sites(multiple)" v-model="selectSites" :items="sites" variant="solo"
+        <v-select class="selectors" label="(multiple)" v-model="selectSites" :items="sites" variant="solo"
           multiple></v-select>
       </div>
 
       <div class="contentpaper">
         <div>What you want to Eat</div>
-        <v-select class="selectors" label="Foods(multiple)" v-model="selectFoods" :items="foods" variant="solo"
+        <v-select class="selectors" label="(multiple)" v-model="selectFoods" :items="foods" variant="solo"
           multiple></v-select>
       </div>
     </div>
