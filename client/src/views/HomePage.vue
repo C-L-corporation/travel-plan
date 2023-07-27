@@ -97,7 +97,7 @@ export default {
     height: 120px;
   }
 
-
+  /* images */
   .airplane {
     position: absolute;
     width: 180px;

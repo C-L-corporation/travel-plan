@@ -67,4 +67,16 @@ export default {
 .logout:hover {
   color: #3d8994;
 }
+
+@media (max-width: 768px) {
+  .user {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 10px;
+    font-family: 'Handlee', cursive;
+    font-size: 15px;
+    color: #3b342a;
+  }
+}
 </style>

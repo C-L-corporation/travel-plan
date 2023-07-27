@@ -44,5 +44,11 @@
     font-weight: bold;
   }
 
+  .facebook:hover {
+    background-color: #3d8994;
+    border-color: #3d8994;
+    color: white;
+  }
+
 }
 </style>

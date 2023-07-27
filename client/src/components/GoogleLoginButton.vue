@@ -43,5 +43,11 @@
     font-family: 'Handlee', cursive;
     font-weight: bold;
   }
+
+  .google:hover {
+    background-color: #3d8994;
+    border-color: #3d8994;
+    color: white;
+  }
 }
 </style>
