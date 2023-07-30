@@ -1,23 +1,35 @@
 <template>
   <v-container class="time-table">
-    <v-row v-for="days in scheduleDetail" :key="days.day">
-      <v-col cols="2" class="day">DAY <br />
-        {{ days.day }}</v-col>
+    <v-row class="time-table-mobile" v-for="days in scheduleDetail" :key="days.day">
+
+      <v-col lg="2" xs="12" class="day">
+        <div>DAY</div>
+        <div>{{ days.day }}</div>
+      </v-col>
+
       <v-col cols="7">
         <v-timeline side="end" align="start">
-          <v-timeline-item size="x-small" class="time-line" v-for="(schedule, index) in days.schedule" :key="schedule.id"
+
+          <v-timeline-item size="x-small" v-for="(schedule, index) in days.schedule" :key="schedule.id"
             :dot-color="getDotColor(index)">
-            <v-row no-gutters class="d-flex dot">
-              <v-col cols="2" class="time me-2">
+
+            <v-row no-gutters class="d-flex dot time-line-mobile">
+              <!-- time -->
+              <v-col lg="2" xs="12" class="time me-2">
                 {{ formatTime(schedule.startAt) }} - {{ formatTime(schedule.endAt) }}
               </v-col>
-              <v-col>
+
+              <!-- activities -->
+              <v-col xs="12">
                 <strong>{{ schedule.activity }}</strong>
+
+                <!-- restaurant -->
                 <div v-show="schedule.type === 'MEAL'" class="restaurant">
                   <v-icon size="small" icon="mdi-food-fork-drink" />
                   {{ schedule.location }}
                 </div>
 
+                <!-- route -->
                 <div class="route" v-for="transport in schedule.transportation" :key="transport.type">
                   >>><v-icon v-if="transport.type === 'TRAIN'" size="small" icon="mdi-train" />
                   <v-icon v-else-if="transport.type === 'WALKING'" size="small" icon="mdi-shoe-print" />
@@ -25,6 +37,7 @@
                   {{ TRANSPORTATION_TYPE_MAP[transport.type] }} from {{ transport.from }} to
                   {{ transport.to }} for {{ formatDuration(transport.duration) }}.
                 </div>
+
               </v-col>
             </v-row>
           </v-timeline-item>
@@ -41,7 +54,9 @@
 import axios from 'axios'
 import { mapState, mapGetters } from 'vuex'
 
+
 export default {
+
 
   data() {
     return {
@@ -56,7 +71,7 @@ export default {
 
   computed: {
     ...mapState('data', ['selectedData']),
-    ...mapGetters('data', ['getSelectedData'])
+    ...mapGetters('data', ['getSelectedData']),
   },
 
   mounted() {
@@ -107,6 +122,8 @@ export default {
       return index % 2 === 0 ? '#3d8994' : '#b4b17e'
     }
   }
+
+
 }
 </script>
 
@@ -135,7 +152,7 @@ export default {
 
 .time {
   font-weight: bold;
-  width: 300px;
+  width: 100%;
 }
 
 .restaurant {
@@ -149,5 +166,58 @@ export default {
   color: #6e604d;
   background-color: #f2efe6;
   margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .time-table {
+    color: #3b342a;
+    width: 100%;
+
+  }
+
+  .time-table-mobile {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .time-line-mobile {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+  }
+
+  .day {
+    font-family: 'Handlee', cursive;
+    font-size: 20px;
+    font-weight: bold;
+    color: #3d8994;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-content: center;
+  }
+
+  .image {
+    display: none;
+  }
+
+  .time {
+    font-weight: bold;
+    width: 300px;
+  }
+
+  .restaurant {
+    font-weight: bold;
+    color: #3d8994;
+    margin-top: 10px;
+  }
+
+  .route {
+    font-size: small;
+    color: #6e604d;
+    background-color: #f2efe6;
+    margin-top: 10px;
+    width: 100%;
+  }
 }
 </style>
