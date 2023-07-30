@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="title">Plan Your Trip Now!</div>
-    <div class="login mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+    <div class="login">
       <GoogleLoginButton />
       <FacebookLoginButton />
     </div>
@@ -39,6 +39,7 @@ export default {
   color: #3b342a;
   margin-top: 150px;
 }
+
 .login {
   display: flex;
   flex-direction: column;
@@ -46,14 +47,11 @@ export default {
   align-items: center;
   background-image: url('/images/contentpaper.png');
   background-size: cover;
-  width: 450px;
-  margin: 80px;
+  width: 600px;
+  height: 200px;
+  margin: 40px;
 }
 
-.subtitle {
-  font-family: 'Handlee', cursive;
-  font-size: 20px;
-}
 
 .airplane {
   position: absolute;
@@ -66,5 +64,52 @@ export default {
   width: 400px;
   top: 300px;
   right: 100px;
+}
+
+
+@media (max-width: 768px) {
+  .page {
+    background-image: url('/images/linepaper.png');
+    background-position: cover;
+    background-size: 100% 350px;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title {
+    font-family: 'Satisfy', cursive;
+    font-size: 30px;
+    color: #3b342a;
+    margin-top: 80px;
+  }
+
+  .login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/images/contentpaper.png');
+    background-position: cover;
+    width: 250px;
+    height: 120px;
+  }
+
+  /* images */
+  .airplane {
+    position: absolute;
+    width: 180px;
+    top: 20px;
+    left: 40px;
+  }
+
+  .tag {
+    position: absolute;
+    width: 130px;
+    top: 180px;
+    right: 0px;
+  }
 }
 </style>

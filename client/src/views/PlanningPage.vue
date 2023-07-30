@@ -174,21 +174,6 @@ export default {
   height: 100px;
 }
 
-/* .choosing {
-  background-image: url('/images/note.png');
-  background-position-x: 60%;
-  background-position-y: 7%;
-  background-size: 90%;
-  width: 600px;
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  margin-top: 20px;
-} */
-
 .button {
   margin-top: 100px;
   display: flex;
@@ -218,5 +203,90 @@ export default {
   bottom: -700px;
   right: 0px;
   width: 450px;
+}
+
+
+@media (max-width: 768px) {
+  .page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    text-align: center;
+    background-image: url('/images/paper.png');
+    background-position-x: 50%;
+    background-size: 120% 100%;
+  }
+
+  .title {
+    font-family: 'Satisfy', cursive;
+    font-size: 40px;
+    color: #3b342a;
+    margin-top: 80px;
+  }
+
+  .content {
+    font-family: 'Handlee', cursive;
+    font-size: 18px;
+    font-weight: bold;
+    color: #3b342a;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  .contentpaper {
+    background-image: url('images/contentpaper.png');
+    background-position: center;
+    background-size: 70%;
+    width: 450px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .selectors {
+    width: 200px;
+    height: 50px;
+  }
+
+  .button {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    color: white;
+    background-color: #3d8994;
+  }
+
+
+  /* images */
+  .suitcase {
+    bottom: -420px;
+    left: 20px;
+    width: 100px;
+  }
+
+  .camera {
+    position: absolute;
+    top: 140px;
+    right: 0px;
+    width: 100px;
+  }
+
+  .pic4 {
+    position: absolute;
+    bottom: -500px;
+    right: 0px;
+    width: 200px;
+  }
 }
 </style>
