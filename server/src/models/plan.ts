@@ -1,4 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
+import { UserTransportationType } from '../types';
 
 type EventType = 'ACTIVITY' | 'MEAL';
 
@@ -19,8 +20,6 @@ type Event = {
   transportation: Transportation[];
 };
 
-type UserTransportationType = 'PUBLIC' | 'DRIVE';
-
 type IPlan = {
   name: string;
   user: ObjectId;
@@ -36,7 +35,7 @@ type IPlan = {
     sentence: string;
   };
   gptResponse: {
-    trip: string;
+    name: string;
     hotelLocation: string;
     itinerary: {
       day: number;
