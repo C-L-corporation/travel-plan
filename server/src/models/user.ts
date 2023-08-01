@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { ObjectId, Schema, model } from 'mongoose';
 
 type IUser = {
   name: string;
@@ -6,7 +6,7 @@ type IUser = {
   photo: string;
   providers: { provider: string; userId: string }[];
   isAdmin: boolean;
-  planTriggeredAt: ReadonlyArray<Date>;
+  plans: ReadonlyArray<ObjectId>;
   createdAt: Date;
   updateAt: Date;
 };
@@ -17,10 +17,7 @@ const userSchema = new Schema<IUser>({
   photo: { type: String, default: null },
   providers: { type: [{ provider: String, userId: String }], default: [] },
   isAdmin: { type: Boolean, default: false },
-  planTriggeredAt: {
-    type: [Date],
-    default: [],
-  },
+  plans: { type: [{ type: Schema.Types.ObjectId, ref: 'Plan' }], default: [] },
   createdAt: { type: Date, default: new Date() },
   updateAt: { type: Date, default: null },
 });
