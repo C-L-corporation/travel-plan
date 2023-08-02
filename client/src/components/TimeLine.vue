@@ -21,7 +21,7 @@
 
               <!-- activities -->
               <v-col xs="12">
-                <strong>{{ schedule.activity }}</strong>
+                <strong>{{ schedule.description }}</strong>
 
                 <!-- restaurant -->
                 <div v-show="schedule.type === 'MEAL'" class="restaurant">
@@ -90,14 +90,14 @@ export default {
       } = this.selectedData;
 
       axios
-        .post('/api/plan', {
+        .post('/api/plan/new', {
           nation: place,
           city: place,
           days: day,
-          transportation: tran,
+          transportation: "PUBLIC",
           hotelLocation: hotel,
-          placeOfInterest: site,
-          foodCategories: food,
+          placeOfInterest: [site],
+          foodCategories: [food],
         })
         .then((response) => {
           console.log('timeline', response)

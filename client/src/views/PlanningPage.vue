@@ -61,8 +61,8 @@ export default {
     return {
       selectPlace: 'Tokyo',
       places: ['Tokyo'],
-      selectDay: 1,
-      days: ['1', '2', '3', '4', '5', '6', '7'],
+      selectDay: 2,
+      days: ['2', '3', '4', '5', '6', '7'],
       selectTran: 'Public Transportation',
       transportations: ['Car', 'Public Transportation'],
       selectHotel: 'Shinjuku Area (West)',
