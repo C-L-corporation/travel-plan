@@ -63,8 +63,8 @@ export default {
       places: ['Tokyo'],
       selectDay: 2,
       days: ['2', '3', '4', '5', '6', '7'],
-      selectTran: 'Public Transportation',
-      transportations: ['Car', 'Public Transportation'],
+      selectTran: 'Public',
+      transportations: ['Public', 'Private'],
       selectHotel: 'Shinjuku Area (West)',
       hotels: [
         'Shinjuku Area (West)',
@@ -112,7 +112,7 @@ export default {
       const selectedData = {
         place: this.selectPlace,
         day: this.selectDay,
-        tran: this.selectTran,
+        tran: this.selectTran.toUpperCase(),
         hotel: this.selectHotel,
         site: this.selectSites,
         food: this.selectFoods

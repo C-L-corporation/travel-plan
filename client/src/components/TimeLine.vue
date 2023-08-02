@@ -1,21 +1,21 @@
 <template>
-  <v-container class="time-table">
-    <v-row class="time-table-mobile" v-for="days in scheduleDetail" :key="days.day">
+  <v-container v-if="scheduleDetail" class="time-table">
+    <v-row class="time-table-mobile" v-for="dayData in scheduleDetail.itinerary" :key="dayData.day">
 
       <v-col lg="2" xs="12" class="day">
         <div>DAY</div>
-        <div>{{ days.day }}</div>
+        <div>{{ dayData.day }}</div>
       </v-col>
 
       <v-col cols="7">
         <v-timeline side="end" align="start">
 
-          <v-timeline-item size="x-small" v-for="(schedule, index) in days.schedule" :key="schedule.id"
+          <v-timeline-item size="x-small" min-width="100%" v-for="(schedule, index) in dayData.events" :key="schedule.id"
             :dot-color="getDotColor(index)">
 
-            <v-row no-gutters class="d-flex dot time-line-mobile">
+            <v-row no-gutters class="time-line-mobile time-line">
               <!-- time -->
-              <v-col lg="2" xs="12" class="time me-2">
+              <v-col lg="2" md="2" xs="12" class="time me-2">
                 {{ formatTime(schedule.startAt) }} - {{ formatTime(schedule.endAt) }}
               </v-col>
 
@@ -48,6 +48,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <div v-else class="loading">Loading...</div>
 </template>
 
 <script>
@@ -94,10 +95,10 @@ export default {
           nation: place,
           city: place,
           days: day,
-          transportation: "PUBLIC",
+          transportation: tran,
           hotelLocation: hotel,
-          placeOfInterest: [site],
-          foodCategories: [food],
+          placeOfInterest: site,
+          foodCategories: food,
         })
         .then((response) => {
           console.log('timeline', response)
@@ -133,6 +134,7 @@ export default {
   color: #3b342a;
 }
 
+
 .day {
   font-family: 'Handlee', cursive;
   font-size: 40px;
@@ -155,6 +157,7 @@ export default {
   width: 100%;
 }
 
+
 .restaurant {
   font-weight: bold;
   color: #3d8994;
@@ -166,6 +169,14 @@ export default {
   color: #6e604d;
   background-color: #f2efe6;
   margin-top: 10px;
+}
+
+.loading {
+  font-family: 'Handlee', cursive;
+  font-size: 40px;
+  text-align: center;
+  color: #3d8994;
+  margin: 100px;
 }
 
 @media (max-width: 768px) {
@@ -218,6 +229,14 @@ export default {
     background-color: #f2efe6;
     margin-top: 10px;
     width: 100%;
+  }
+
+  .loading {
+    font-family: 'Handlee', cursive;
+    font-size: 20px;
+    text-align: center;
+    color: #3d8994;
+    margin: 100px;
   }
 }
 </style>
