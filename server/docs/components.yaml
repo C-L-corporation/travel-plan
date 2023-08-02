@@ -76,6 +76,9 @@ components:
           readOnly: true
         query:
           $ref: '#/components/schemas/PlanQuery'
+        querySentence:
+          type: string
+          example: Plan a 3-day trip to Tokyo, Japan, focusing on nature landscapes and museums. The hotel is located in the Shinjuku area. I prefer seafood for meals and want to use public transportation only.
         gptResponse:
           $ref: '#/components/schemas/GptResponse'
     PlanQuery:
@@ -88,7 +91,6 @@ components:
         - nation
         - placeOfInterest
         - foodCategories
-        - sentence
       properties:
         days:
           type: integer
@@ -113,9 +115,6 @@ components:
           type: array
           items:
             type: string
-        sentence:
-          type: string
-          example: "I'd like to see the Statue of Liberty and eat at some great restaurants."
     GptResponse:
       type: object
       required:

@@ -1,5 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
-import { UserQuery, UserTransportationType } from '../types';
+import { UserQuery } from '../types';
 
 type EventType = 'ACTIVITY' | 'MEAL';
 
@@ -24,7 +24,8 @@ type IPlan = {
   name: string;
   user: ObjectId;
   createdAt: Date;
-  query: UserQuery & { sentence: string };
+  query: UserQuery;
+  querySentence: string;
   gptResponse: {
     name: string;
     hotelLocation: string;
@@ -48,8 +49,8 @@ const planSchema = new Schema<IPlan>({
     nation: { type: String, required: true },
     placeOfInterest: { type: [String], required: true },
     foodCategories: { type: [String], required: true },
-    sentence: { type: String, required: true },
   },
+  querySentence: { type: String, required: true },
   gptResponse: {
     trip: { type: String, required: true },
     hotelLocation: { type: String, required: true },

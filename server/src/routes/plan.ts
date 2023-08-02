@@ -5,7 +5,7 @@ import { rateLimit } from 'express-rate-limit';
 import { UserWithParsedId, verifyUser } from '../authenticate';
 import createHttpError from 'http-errors';
 import { User } from '../models';
-import { IPlan } from '../models/plan';
+import { IPlan, Plan } from '../models/plan';
 import { isDeepEqual, getUserQuerySentence, validateUserQuery } from '../utils';
 
 const MOCK_DATA = JSON.parse(
@@ -276,19 +276,39 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
   if (!valid) {
     next(createHttpError(400, message));
   }
+  try {
+    const querySentence = getUserQuerySentence({
+      hotelLocation,
+      days,
+      transportation,
+      city,
+      nation,
+      placeOfInterest,
+      foodCategories,
+    });
+    console.info(querySentence);
 
-  const querySentence = getUserQuerySentence({
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories,
-  });
-  console.info(querySentence);
+    const plan = new Plan({
+      query: {
+        hotelLocation,
+        days,
+        transportation,
+        city,
+        nation,
+        placeOfInterest,
+        foodCategories,
+      },
+      querySentence,
+      user: (req.user as UserWithParsedId).id,
+      gptResponse: MOCK_DATA,
+    });
 
-  res.send(MOCK_DATA);
+    await plan.save();
+
+    res.send(MOCK_DATA);
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default planRouter;
