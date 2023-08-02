@@ -61,7 +61,7 @@ export default {
     return {
       selectPlace: 'Tokyo',
       places: ['Tokyo'],
-      selectDay: 2,
+      selectDay: '2',
       days: ['2', '3', '4', '5', '6', '7'],
       selectTran: 'Public',
       transportations: ['Public', 'Private'],
