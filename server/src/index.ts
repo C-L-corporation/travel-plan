@@ -46,6 +46,10 @@ if (NODE_ENV === 'development') {
         version: '1.0.0',
       },
     },
+    tags: [
+      { name: 'Auth', description: 'APIs related to authentication' },
+      { name: 'Plans', description: 'APIs for managing plans' },
+    ],
     apis: [
       path.resolve(__dirname, '../docs/components.yaml'),
       `${__dirname}/routes/*.ts`,

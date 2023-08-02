@@ -33,6 +33,7 @@ const authRateLimiter = rateLimit({
  * /auth/google:
  *   get:
  *     summary: Authenticate with Google
+ *     tags: [Auth]
  *     description: Redirects to Google for authentication, asking for profile and email permissions.
  *     responses:
  *       302:
@@ -48,6 +49,7 @@ authRouter.get(
  * /auth/facebook:
  *   get:
  *     summary: Authenticate with Facebook
+ *     tags: [Auth]
  *     description: Redirects to Facebook for authentication, asking for public profile and email permissions.
  *     responses:
  *       302:
@@ -128,21 +130,21 @@ authRouter.get(
 
 /**
  * @swagger
- * /me:
+ * /auth/me:
  *   get:
- *     summary: Retrieve the authenticated user's information
- *     description: This API route retrieves the authenticated user's data based on JWT authentication.
+ *     summary: Retrieves the details of the current user.
+ *     tags: [Auth]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
- *       200:
- *         description: The user's information was retrieved successfully.
+ *       '200':
+ *         description: The details of the current user.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       401:
- *         description: Unauthorized. The user needs to login.
+ *       '401':
+ *         description: Unauthorized, the user is not logged in.
  */
 authRouter.get('/me', authRateLimiter, verifyUser, async (req, res, next) => {
   try {
