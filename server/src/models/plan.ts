@@ -52,7 +52,7 @@ const planSchema = new Schema<IPlan>({
   },
   querySentence: { type: String, required: true },
   gptResponse: {
-    trip: { type: String, required: true },
+    name: { type: String, required: true },
     hotelLocation: { type: String, required: true },
     itinerary: [
       {

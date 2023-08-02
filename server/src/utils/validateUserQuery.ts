@@ -5,6 +5,9 @@ const isTransportationType = (
 ): transportation is UserTransportationType =>
   transportation === 'PUBLIC' || transportation === 'PRIVATE';
 
+const isValidArray = (arr: unknown): arr is string[] =>
+  Array.isArray(arr) && arr.every((item) => typeof item === 'string');
+
 const validateUserQuery = (
   query: UserQuery
 ): { valid: true; message: null } | { valid: false; message: string } => {
@@ -32,6 +35,10 @@ const validateUserQuery = (
 
   if (days < 2 || days > 7) {
     return { valid: false, message: 'Days must be between 2 and 7' };
+  }
+
+  if (!isValidArray(placeOfInterest) || !isValidArray(foodCategories)) {
+    return { valid: false, message: 'Invalid array input' };
   }
 
   if (!isTransportationType(transportation)) {

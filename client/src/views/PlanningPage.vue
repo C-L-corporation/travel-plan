@@ -61,10 +61,10 @@ export default {
     return {
       selectPlace: 'Tokyo',
       places: ['Tokyo'],
-      selectDay: 1,
-      days: ['1', '2', '3', '4', '5', '6', '7'],
-      selectTran: 'Public Transportation',
-      transportations: ['Car', 'Public Transportation'],
+      selectDay: '2',
+      days: ['2', '3', '4', '5', '6', '7'],
+      selectTran: 'Public',
+      transportations: ['Public', 'Private'],
       selectHotel: 'Shinjuku Area (West)',
       hotels: [
         'Shinjuku Area (West)',
@@ -111,8 +111,8 @@ export default {
     createItinerary() {
       const selectedData = {
         place: this.selectPlace,
-        day: this.selectDay,
-        tran: this.selectTran,
+        day: parseInt(this.selectDay, 10),
+        tran: this.selectTran.toUpperCase(),
         hotel: this.selectHotel,
         site: this.selectSites,
         food: this.selectFoods
