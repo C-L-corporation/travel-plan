@@ -21,7 +21,8 @@ const planRateLimiter = rateLimit({
 
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 3,
+  // TODO: change back to 3
+  max: 10000,
   message: 'Call GPT too many times, please try again in a minute.',
 });
 
@@ -264,6 +265,16 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     foodCategories,
   } = req.body;
 
+  // TODO: remove it
+  console.log('request', {
+    hotelLocation,
+    days,
+    transportation,
+    city,
+    nation,
+    placeOfInterest,
+    foodCategories,
+  })
   const { valid, message } = validateUserQuery({
     hotelLocation,
     days,
@@ -290,6 +301,8 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     console.info(querySentence);
 
     const plan = new Plan({
+      name: `${(req.user  as UserWithParsedId).name}-${MOCK_DATA.name}`,
+      user: new ObjectId((req.user as UserWithParsedId).id),
       query: {
         hotelLocation,
         days,
@@ -300,7 +313,6 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
         foodCategories,
       },
       querySentence,
-      user: new ObjectId((req.user as UserWithParsedId).id),
       gptResponse: MOCK_DATA,
     });
 
