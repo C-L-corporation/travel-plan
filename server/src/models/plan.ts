@@ -1,5 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
-import { UserTransportationType } from '../types';
+import { UserQuery, UserTransportationType } from '../types';
 
 type EventType = 'ACTIVITY' | 'MEAL';
 
@@ -24,16 +24,7 @@ type IPlan = {
   name: string;
   user: ObjectId;
   createdAt: Date;
-  query: {
-    days: number;
-    hotelLocation: string;
-    transportation: UserTransportationType;
-    city: string;
-    nation: string;
-    placeOfInterest: string[];
-    foodCategories: string[];
-    sentence: string;
-  };
+  query: UserQuery & { sentence: string };
   gptResponse: {
     name: string;
     hotelLocation: string;

@@ -6,7 +6,7 @@ import { UserWithParsedId, verifyUser } from '../authenticate';
 import createHttpError from 'http-errors';
 import { User } from '../models';
 import { IPlan } from '../models/plan';
-import { isDeepEqual, getUserQuerySentence } from '../utils';
+import { isDeepEqual, getUserQuerySentence, validateUserQuery } from '../utils';
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
@@ -30,51 +30,59 @@ planRouter.use(express.json());
 /**
  * @swagger
  * /plan/same-query-check:
- *  post:
- *    summary: Check if the current plan query is the same as the latest plan's query
- *    tags:
- *      - Plans
- *    security:
- *      - BearerAuth: []
- *    requestBody:
- *      description: Plan query to be checked
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              hotelLocation:
- *                type: string
- *              days:
- *                type: number
- *              transportation:
- *                type: string
- *              city:
- *                type: string
- *              nation:
- *                type: string
- *              placeOfInterest:
- *                type: array
- *                items:
- *                  type: string
- *              foodCategories:
- *                type: array
- *                items:
- *                  type: string
- *    responses:
- *      '200':
- *        description: A boolean indicating if the current query is the same as the latest plan's query
- *        content:
- *          application/json:
- *            schema:
- *              type: boolean
- *      '400':
- *        description: Missing required fields or days out of range (1-7)
- *      '401':
- *        description: No authorization or user not found.
- *      '500':
- *        description: Unexpected error.
+ *   post:
+ *     summary: Checks if the new query matches the latest one
+ *     tags:
+ *       - Plan
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - hotelLocation
+ *               - days
+ *               - transportation
+ *               - city
+ *               - nation
+ *               - placeOfInterest
+ *               - foodCategories
+ *             properties:
+ *               hotelLocation:
+ *                 type: string
+ *               days:
+ *                 type: integer
+ *                 minimum: 2
+ *                 maximum: 7
+ *               transportation:
+ *                 type: string
+ *                 enum: [PUBLIC, DRIVE]
+ *               city:
+ *                 type: string
+ *               nation:
+ *                 type: string
+ *               placeOfInterest:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               foodCategories:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Boolean indicating if the new query matches the latest one
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: boolean
+ *       400:
+ *         description: Missing required fields or invalid inputs
+ *       401:
+ *         description: Unauthorized
  */
 planRouter.post(
   '/same-query-check',
@@ -92,20 +100,18 @@ planRouter.post(
         foodCategories,
       } = req.body;
 
-      if (
-        !hotelLocation ||
-        !days ||
-        !transportation ||
-        !city ||
-        !nation ||
-        !placeOfInterest ||
-        !foodCategories
-      ) {
-        next(createHttpError(400, 'Missing required fields'));
-      }
+      const { valid, message } = validateUserQuery({
+        hotelLocation,
+        days,
+        transportation,
+        city,
+        nation,
+        placeOfInterest,
+        foodCategories,
+      });
 
-      if (days < 1 || days > 7) {
-        next(createHttpError(400, 'Days must be between 1 and 7'));
+      if (!valid) {
+        next(createHttpError(400, message));
       }
 
       if (!req.user) next(createHttpError(401));
@@ -169,70 +175,82 @@ planRouter.get(
   async (req, res, next) => {
     if (!req.user) next(createHttpError(401));
 
-    const user = await User.findById(
-      (req.user as UserWithParsedId).id
-    ).populate({
-      path: 'plans',
-      options: { sort: { createdAt: -1 } }, // sort in descending order
-    });
+    try {
+      const user = await User.findById(
+        (req.user as UserWithParsedId).id
+      ).populate({
+        path: 'plans',
+        options: { sort: { createdAt: -1 } }, // sort in descending order
+      });
 
-    if (!user) {
-      next(createHttpError(401));
-      return;
+      if (!user) {
+        next(createHttpError(401));
+        return;
+      }
+      const [latestPlan] = user.plans as unknown as IPlan[];
+      return res.send(latestPlan);
+    } catch (err) {
+      next(err);
     }
-    const [latestPlan] = user.plans as unknown as IPlan[];
-    return res.send(latestPlan);
   }
 );
 
 /**
  * @swagger
  * /plan/new:
- *  post:
- *    summary: Generate a new plan
- *    tags:
- *      - Plans
- *    security:
- *      - BearerAuth: []
- *    requestBody:
- *      description: Plan details
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              hotelLocation:
- *                type: string
- *              days:
- *                type: number
- *              transportation:
- *                type: string
- *              city:
- *                type: string
- *              nation:
- *                type: string
- *              placeOfInterest:
- *                type: array
- *                items:
- *                  type: string
- *              foodCategories:
- *                type: array
- *                items:
- *                  type: string
- *    responses:
- *      '200':
- *        description: New plan generated successfully
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Plan'
- *      '400':
- *        description: Missing required fields or days are not between 1 and 7
- *      '401':
- *        description: No authorization or user not found.
- *      '500':
- *        description: Unexpected error.
+ *   post:
+ *     summary: Create a new travel plan
+ *     tags:
+ *       - Plan
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - hotelLocation
+ *               - days
+ *               - transportation
+ *               - city
+ *               - nation
+ *               - placeOfInterest
+ *               - foodCategories
+ *             properties:
+ *               hotelLocation:
+ *                 type: string
+ *               days:
+ *                 type: integer
+ *                 minimum: 2
+ *                 maximum: 7
+ *               transportation:
+ *                 type: string
+ *                 enum: [PUBLIC, DRIVE]
+ *               city:
+ *                 type: string
+ *               nation:
+ *                 type: string
+ *               placeOfInterest:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               foodCategories:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: The created travel plan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Plan'
+ *       400:
+ *         description: Missing required fields or invalid inputs
+ *       401:
+ *         description: Unauthorized
  */
 planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
   const {
@@ -245,20 +263,18 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     foodCategories,
   } = req.body;
 
-  if (
-    !hotelLocation ||
-    !days ||
-    !transportation ||
-    !city ||
-    !nation ||
-    !placeOfInterest ||
-    !foodCategories
-  ) {
-    next(createHttpError(400, 'Missing required fields'));
-  }
+  const { valid, message } = validateUserQuery({
+    hotelLocation,
+    days,
+    transportation,
+    city,
+    nation,
+    placeOfInterest,
+    foodCategories,
+  });
 
-  if (days < 1 || days > 7) {
-    next(createHttpError(400, 'Days must be between 1 and 7'));
+  if (!valid) {
+    next(createHttpError(400, message));
   }
 
   const querySentence = getUserQuerySentence({
