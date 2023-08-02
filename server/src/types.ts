@@ -1,4 +1,4 @@
-export type UserTransportationType = 'PUBLIC' | 'DRIVE';
+export type UserTransportationType = 'PUBLIC' | 'PRIVATE';
 
 export type UserQuery = {
   days: number;

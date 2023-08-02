@@ -1,8 +1,13 @@
-import { UserQuery } from '../types';
+import { UserQuery, UserTransportationType } from '../types';
+
+const isTransportationType = (
+  transportation: string
+): transportation is UserTransportationType =>
+  transportation === 'PUBLIC' || transportation === 'PRIVATE';
 
 const validateUserQuery = (
   query: UserQuery
-): { valid: true; message: null } | { valid: false, message: string } => {
+): { valid: true; message: null } | { valid: false; message: string } => {
   const {
     hotelLocation,
     days,
@@ -29,7 +34,7 @@ const validateUserQuery = (
     return { valid: false, message: 'Days must be between 2 and 7' };
   }
 
-  if (transportation !== 'PUBLIC' && transportation !== 'DRIVE') {
+  if (!isTransportationType(transportation)) {
     return { valid: false, message: 'Invalid transportation type' };
   }
 

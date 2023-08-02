@@ -60,7 +60,7 @@ planRouter.use(express.json());
  *                 maximum: 7
  *               transportation:
  *                 type: string
- *                 enum: [PUBLIC, DRIVE]
+ *                 enum: [PUBLIC, PRIVATE]
  *               city:
  *                 type: string
  *               nation:
@@ -228,7 +228,7 @@ planRouter.get(
  *                 maximum: 7
  *               transportation:
  *                 type: string
- *                 enum: [PUBLIC, DRIVE]
+ *                 enum: [PUBLIC, PRIVATE]
  *               city:
  *                 type: string
  *               nation:

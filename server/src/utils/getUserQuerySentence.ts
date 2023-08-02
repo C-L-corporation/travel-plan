@@ -18,7 +18,7 @@ type Query = {
 /**
  * example:
  * Plan a 3-day trip to Tokyo, Japan, focusing on nature landscapes and museums. The hotel is located in the Shinjuku area. I prefer seafood for meals and want to use public transportation only.
- */ 
+ */
 const getUserQuerySentence = ({
   hotelLocation,
   days,
@@ -36,9 +36,7 @@ const getUserQuerySentence = ({
     foodCategories.length > 0
       ? ` prefer ${joinWithAndWording(foodCategories)} for meals and`
       : ''
-  } want to use ${
-    transportation === 'PUBLIC' ? 'public' : 'private'
-  } transportation only.`;
+  } want to use ${transportation.toLowerCase()} transportation only.`;
 };
 
 export default getUserQuerySentence;
