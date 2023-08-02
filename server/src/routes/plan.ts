@@ -7,6 +7,7 @@ import createHttpError from 'http-errors';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
 import { isDeepEqual, getUserQuerySentence, validateUserQuery } from '../utils';
+import { ObjectId } from 'mongodb';
 
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
@@ -299,7 +300,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
         foodCategories,
       },
       querySentence,
-      user: (req.user as UserWithParsedId).id,
+      user: new ObjectId((req.user as UserWithParsedId).id),
       gptResponse: MOCK_DATA,
     });
 
