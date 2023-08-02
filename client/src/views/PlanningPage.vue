@@ -111,7 +111,7 @@ export default {
     createItinerary() {
       const selectedData = {
         place: this.selectPlace,
-        day: this.selectDay,
+        day: parseInt(this.selectDay, 10),
         tran: this.selectTran.toUpperCase(),
         hotel: this.selectHotel,
         site: this.selectSites,
