@@ -1,92 +1,205 @@
 components:
+  securitySchemes:
+    BearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
   schemas:
     User:
       type: object
+      required:
+        - name
+        - email
       properties:
         _id:
           type: string
-          description: The user ID.
-          example: 60d221f68b38923a04f2a09f
+          format: uuid
+          readOnly: true
         name:
           type: string
-          description: The name of the user.
-          example: John Doe
+          example: "John Doe"
         email:
           type: string
-          description: The email of the user.
-          example: john.doe@example.com
+          format: email
+          example: "john.doe@example.com"
         photo:
           type: string
-          description: The URL to the profile picture of the user.
-          example: https://example.com/user-photo.jpg
+          format: uri
+          example: "http://example.com/photo.jpg"
         providers:
           type: array
           items:
-            type: object
-            properties:
-              provider:
-                type: string
-                description: The name of the provider.
-                example: Google
-              userId:
-                type: string
-                description: The ID of the user in the provider's system.
-                example: 1234567890
-          description: The list of providers that the user is linked to.
-          example: [{ provider: 'Google', userId: '1234567890' }]
+            $ref: '#/components/schemas/Provider'
         isAdmin:
           type: boolean
-          description: Whether the user is an administrator.
+          default: false
           example: false
-        planTriggers:
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/Plan'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    Provider:
+      type: object
+      properties:
+        provider:
+          type: string
+          example: "Google"
+        userId:
+          type: string
+          example: "user-id-from-provider"
+    Plan:
+      type: object
+      required:
+        - name
+        - user
+      properties:
+        _id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          example: "A trip to New York"
+        user:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        query:
+          $ref: '#/components/schemas/PlanQuery'
+        gptResponse:
+          $ref: '#/components/schemas/GptResponse'
+    PlanQuery:
+      type: object
+      required:
+        - days
+        - hotelLocation
+        - transportation
+        - city
+        - nation
+        - placeOfInterest
+        - foodCategories
+        - sentence
+      properties:
+        days:
+          type: integer
+          example: 3
+        hotelLocation:
+          type: string
+          example: "123 Main St, New York"
+        transportation:
+          type: string
+          enum: [ 'TRAIN', 'WALK', 'DRIVE' ]
+        city:
+          type: string
+          example: "New York"
+        nation:
+          type: string
+          example: "USA"
+        placeOfInterest:
           type: array
           items:
             type: string
-            format: date-time
-          description: The timestamps when the user triggered the plan function.
-          example: ['2023-07-18T00:00:00Z', '2023-07-19T00:00:00Z', '2023-07-20T00:00:00Z']
-    Transportation:
+        foodCategories:
+          type: array
+          items:
+            type: string
+        sentence:
+          type: string
+          example: "I'd like to see the Statue of Liberty and eat at some great restaurants."
+    GptResponse:
       type: object
+      required:
+        - name
+        - hotelLocation
+        - itinerary
       properties:
-        type:
+        name:
           type: string
-        duration:
-          type: integer
-        from:
+          example: "My trip to New York"
+        hotelLocation:
           type: string
-        to:
-          type: string
-    Schedule:
+          example: "123 Main St, New York"
+        itinerary:
+          type: array
+          items:
+            $ref: '#/components/schemas/Itinerary'
+    Itinerary:
       type: object
+      required:
+        - day
+        - date
+        - events
+      properties:
+        day:
+          type: integer
+          example: 1
+        date:
+          type: integer
+          example: 1627947600
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+    Event:
+      type: object
+      required:
+        - id
+        - startAt
+        - endAt
+        - description
+        - type
+        - location
+        - transportation
       properties:
         id:
           type: integer
+          example: 1
         startAt:
           type: integer
+          example: 1627947600
         endAt:
           type: integer
-        activity:
+          example: 1627951200
+        description:
           type: string
+          example: "Visit the Statue of Liberty"
         type:
           type: string
+          enum: [ 'ACTIVITY', 'MEAL' ]
         location:
           type: string
+          example: "Statue of Liberty, New York"
         transportation:
           type: array
           items:
             $ref: '#/components/schemas/Transportation'
-    DayPlan:
+    Transportation:
       type: object
+      required:
+        - type
+        - duration
+        - from
+        - to
       properties:
-        day:
+        type:
+          type: string
+          enum: [ 'TRAIN', 'WALK', 'DRIVE' ]
+        duration:
           type: integer
-        date:
-          type: integer
-        schedule:
-          type: array
-          items:
-            $ref: '#/components/schemas/Schedule'
-    Plan:
-      type: array
-      items:
-        $ref: '#/components/schemas/DayPlan'
+          example: 30
+        from:
+          type: string
+          example: "123 Main St, New York"
+        to:
+          type: string
+          example: "Statue of Liberty, New York"

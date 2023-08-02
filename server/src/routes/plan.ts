@@ -27,6 +27,55 @@ const gptRateLimiter = rateLimit({
 const planRouter = express.Router();
 planRouter.use(express.json());
 
+/**
+ * @swagger
+ * /plan/same-query-check:
+ *  post:
+ *    summary: Check if the current plan query is the same as the latest plan's query
+ *    tags:
+ *      - Plans
+ *    security:
+ *      - BearerAuth: []
+ *    requestBody:
+ *      description: Plan query to be checked
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              hotelLocation:
+ *                type: string
+ *              days:
+ *                type: number
+ *              transportation:
+ *                type: string
+ *              city:
+ *                type: string
+ *              nation:
+ *                type: string
+ *              placeOfInterest:
+ *                type: array
+ *                items:
+ *                  type: string
+ *              foodCategories:
+ *                type: array
+ *                items:
+ *                  type: string
+ *    responses:
+ *      '200':
+ *        description: A boolean indicating if the current query is the same as the latest plan's query
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: boolean
+ *      '400':
+ *        description: Missing required fields or days out of range (1-7)
+ *      '401':
+ *        description: No authorization or user not found.
+ *      '500':
+ *        description: Unexpected error.
+ */
 planRouter.post(
   '/same-query-check',
   planRateLimiter,
@@ -92,8 +141,29 @@ planRouter.post(
   }
 );
 
+/**
+ * @swagger
+ * /plan/latest:
+ *  get:
+ *    summary: Get the latest plan of the current user
+ *    tags:
+ *      - Plans
+ *    security:
+ *      - BearerAuth: []
+ *    responses:
+ *      '200':
+ *        description: The latest plan was returned successfully.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Plan'
+ *      '401':
+ *        description: No authorization or user not found.
+ *      '500':
+ *        description: Unexpected error.
+ */
 planRouter.get(
-  '/previous',
+  '/latest',
   planRateLimiter,
   verifyUser,
   async (req, res, next) => {
@@ -117,45 +187,54 @@ planRouter.get(
 
 /**
  * @swagger
- * /:
- *   post:
- *     summary: Create a plan
- *     tags: [Plans]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               hotelLocation:
- *                 type: string
- *               days:
- *                 type: integer
- *                 minimum: 1
- *                 maximum: 7
- *                 description: The number of days in the plan. Must be between 1 and 7.
- *               transportation:
- *                 type: string
- *               city:
- *                 type: string
- *               nation:
- *                 type: string
- *               placeOfInterest:
- *                 type: string
- *               foodCategories:
- *                 type: string
- *     responses:
- *       200:
- *         description: The plan was successfully created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Plan'
- *       400:
- *         description: Bad request. Days must be between 1 and 7.
+ * /plan/new:
+ *  post:
+ *    summary: Generate a new plan
+ *    tags:
+ *      - Plans
+ *    security:
+ *      - BearerAuth: []
+ *    requestBody:
+ *      description: Plan details
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              hotelLocation:
+ *                type: string
+ *              days:
+ *                type: number
+ *              transportation:
+ *                type: string
+ *              city:
+ *                type: string
+ *              nation:
+ *                type: string
+ *              placeOfInterest:
+ *                type: array
+ *                items:
+ *                  type: string
+ *              foodCategories:
+ *                type: array
+ *                items:
+ *                  type: string
+ *    responses:
+ *      '200':
+ *        description: New plan generated successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Plan'
+ *      '400':
+ *        description: Missing required fields or days are not between 1 and 7
+ *      '401':
+ *        description: No authorization or user not found.
+ *      '500':
+ *        description: Unexpected error.
  */
-planRouter.post('/', gptRateLimiter, verifyUser, async (req, res, next) => {
+planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
   const {
     hotelLocation,
     days,
@@ -165,6 +244,22 @@ planRouter.post('/', gptRateLimiter, verifyUser, async (req, res, next) => {
     placeOfInterest,
     foodCategories,
   } = req.body;
+
+  if (
+    !hotelLocation ||
+    !days ||
+    !transportation ||
+    !city ||
+    !nation ||
+    !placeOfInterest ||
+    !foodCategories
+  ) {
+    next(createHttpError(400, 'Missing required fields'));
+  }
+
+  if (days < 1 || days > 7) {
+    next(createHttpError(400, 'Days must be between 1 and 7'));
+  }
 
   const querySentence = getUserQuerySentence({
     hotelLocation,
