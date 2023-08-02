@@ -119,10 +119,7 @@ planRouter.post(
       if (!req.user) next(createHttpError(401));
       const user = await User.findById(
         (req.user as UserWithParsedId).id
-      ).populate({
-        path: 'plans',
-        options: { sort: { createdAt: -1 } }, // sort in descending order
-      });
+      ).populate({ path: 'plans', options: { sort: { createdAt: -1 }, limit: 1 } });
 
       if (!user) {
         next(createHttpError(401));
@@ -130,7 +127,7 @@ planRouter.post(
       }
 
       if (user.plans.length > 0) {
-        const [latestPlan] = user.plans as unknown as IPlan[];
+        const [latestPlan] = (user.plans as unknown as IPlan[]);
 
         return (
           latestPlan.query.hotelLocation === hotelLocation &&
@@ -274,7 +271,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     nation,
     placeOfInterest,
     foodCategories,
-  })
+  });
   const { valid, message } = validateUserQuery({
     hotelLocation,
     days,
@@ -301,7 +298,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     console.info(querySentence);
 
     const plan = new Plan({
-      name: `${(req.user  as UserWithParsedId).name}-${MOCK_DATA.name}`,
+      name: `${(req.user as UserWithParsedId).name}-${MOCK_DATA.name}`,
       user: new ObjectId((req.user as UserWithParsedId).id),
       query: {
         hotelLocation,
@@ -317,6 +314,11 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     });
 
     await plan.save();
+
+    await User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
+      $push: { plans: plan._id },
+      $set: { updatedAt: plan.createdAt },
+    });
 
     res.send(MOCK_DATA);
   } catch (err) {
