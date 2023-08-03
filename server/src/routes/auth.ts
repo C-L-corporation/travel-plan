@@ -24,7 +24,14 @@ type UserWithId = IUser & { _id: ObjectId };
 const authRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5,
-  message: 'Login too many times, please try again in a minute.',
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        429,
+        'Too many login attempts. Please try again in one minute.'
+      )
+    );
+  },
 });
 
 // Auth

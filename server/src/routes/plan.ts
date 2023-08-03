@@ -16,14 +16,28 @@ const MOCK_DATA = JSON.parse(
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 20,
-  message: 'Plan too many times, please try again in a minute.',
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        429,
+        'Your requests are being made too rapidly. Please pause for a minute before resubmitting'
+      )
+    );
+  },
 });
 
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   // TODO: change back to 3
-  max: 10000,
-  message: 'Call GPT too many times, please try again in a minute.',
+  max: 100,
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        429,
+        "You've exceeded the maximum number of GPT calls for today. Please retry tomorrow."
+      )
+    );
+  },
 });
 
 const planRouter = express.Router();
@@ -119,7 +133,10 @@ planRouter.post(
       if (!req.user) next(createHttpError(401));
       const user = await User.findById(
         (req.user as UserWithParsedId).id
-      ).populate({ path: 'plans', options: { sort: { createdAt: -1 }, limit: 1 } });
+      ).populate({
+        path: 'plans',
+        options: { sort: { createdAt: -1 }, limit: 1 },
+      });
 
       if (!user) {
         next(createHttpError(401));
@@ -127,7 +144,7 @@ planRouter.post(
       }
 
       if (user.plans.length > 0) {
-        const [latestPlan] = (user.plans as unknown as IPlan[]);
+        const [latestPlan] = user.plans as unknown as IPlan[];
 
         return (
           latestPlan.query.hotelLocation === hotelLocation &&
