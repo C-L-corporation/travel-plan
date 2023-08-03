@@ -10,8 +10,9 @@ declare namespace NodeJS {
     JWT_SECRET: string;
     MONGODB_URL: string;
     STORAGE_PATH: string;
-    // development only
+    // development environment variables
     CLIENT_PORT?: string;
     SERVER_PORT?: string;
+    LOCAL_SYSTEM_PROMPT: string;
   }
 }

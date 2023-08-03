@@ -2,16 +2,29 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { rateLimit } from 'express-rate-limit';
-import { UserWithParsedId, verifyUser } from '../authenticate';
+import { ObjectId } from 'mongodb';
 import createHttpError from 'http-errors';
+import { Configuration, OpenAIApi } from 'openai';
+import dontenv from 'dotenv';
+
+import { UserWithParsedId, verifyUser } from '../authenticate';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
-import { isDeepEqual, getUserQuerySentence, validateUserQuery } from '../utils';
-import { ObjectId } from 'mongodb';
+import { isDeepEqual, getUserPrompt, validateUserQuery } from '../utils';
 
+dontenv.config();
+
+// ChatGPT setup
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
 );
+const { CHATGPT_API_KEY } = process.env;
+if (!CHATGPT_API_KEY) throw new Error('CHATGPT_API_KEY is not defined');
+
+const configuration = new Configuration({
+  apiKey: CHATGPT_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
 let systemPrompt: string | null = null;
 // The prompt should be set before this module is imported
@@ -35,7 +48,7 @@ const planRateLimiter = rateLimit({
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   // TODO: change back to 3
-  max: 100,
+  max: 3,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -210,7 +223,7 @@ planRouter.get(
         return;
       }
       const [latestPlan] = user.plans as unknown as IPlan[];
-      return res.send(latestPlan);
+      return res.json(latestPlan);
     } catch (err) {
       next(err);
     }
@@ -285,16 +298,6 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     foodCategories,
   } = req.body;
 
-  // TODO: remove it
-  console.log('request', {
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories,
-  });
   const { valid, message } = validateUserQuery({
     hotelLocation,
     days,
@@ -309,7 +312,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     next(createHttpError(400, message));
   }
   try {
-    const querySentence = getUserQuerySentence({
+    const userPrompt = getUserPrompt({
       hotelLocation,
       days,
       transportation,
@@ -318,7 +321,33 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
       placeOfInterest,
       foodCategories,
     });
-    console.info(querySentence);
+
+    if (systemPrompt === null) {
+      next(createHttpError(500, 'Missing system prompt'));
+      return;
+    }
+
+    console.info(
+      `[${(req.user as UserWithParsedId).name} (${
+        (req.user as UserWithParsedId).id
+      })]: ${userPrompt}`
+    );
+    const chatCompletion = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo-16k',
+      temperature: 0.7,
+      max_tokens: 12_000,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
+
+    const gptMessage = chatCompletion.data.choices[0].message;
+    if (!gptMessage || !gptMessage.content) {
+      next(createHttpError(500, 'Missing GPT message'));
+      return;
+    }
+    const gptResponse = JSON.parse(gptMessage.content);
 
     const plan = new Plan({
       name: `${(req.user as UserWithParsedId).name}-${MOCK_DATA.name}`,
@@ -332,18 +361,19 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
         placeOfInterest,
         foodCategories,
       },
-      querySentence,
-      gptResponse: MOCK_DATA,
+      userPrompt,
+      gptResponse,
     });
 
-    await plan.save();
+    await Promise.all([
+      plan.save(),
+      User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
+        $push: { plans: plan._id },
+        $set: { updatedAt: plan.createdAt },
+      }),
+    ]);
 
-    await User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
-      $push: { plans: plan._id },
-      $set: { updatedAt: plan.createdAt },
-    });
-
-    res.send(MOCK_DATA);
+    res.json(gptResponse);
   } catch (err) {
     next(err);
   }

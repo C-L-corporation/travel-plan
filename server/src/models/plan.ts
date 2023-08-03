@@ -25,7 +25,7 @@ type IPlan = {
   user: ObjectId;
   createdAt: Date;
   query: UserQuery;
-  querySentence: string;
+  userPrompt: string;
   gptResponse: {
     name: string;
     hotelLocation: string;
@@ -50,7 +50,7 @@ const planSchema = new Schema<IPlan>({
     placeOfInterest: { type: [String], required: true },
     foodCategories: { type: [String], required: true },
   },
-  querySentence: { type: String, required: true },
+  userPrompt: { type: String, required: true },
   gptResponse: {
     name: { type: String, required: true },
     hotelLocation: { type: String, required: true },

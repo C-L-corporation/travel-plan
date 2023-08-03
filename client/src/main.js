@@ -11,7 +11,7 @@ import router from './router'
 import store from './store/index'
 import axios from 'axios'
 
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 60_000;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // Vuetify

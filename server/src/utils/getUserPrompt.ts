@@ -19,7 +19,7 @@ type Query = {
  * example:
  * Plan a 3-day trip to Tokyo, Japan, focusing on nature landscapes and museums. The hotel is located in the Shinjuku area. I prefer seafood for meals and want to use public transportation only.
  */
-const getUserQuerySentence = ({
+const getUserPrompt = ({
   hotelLocation,
   days,
   transportation,
@@ -39,4 +39,4 @@ const getUserQuerySentence = ({
   } want to use ${transportation.toLowerCase()} transportation only.`;
 };
 
-export default getUserQuerySentence;
+export default getUserPrompt;
