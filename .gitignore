@@ -13,6 +13,7 @@ dist
 dist-ssr
 coverage
 *.local
+system_prompt.txt
 
 .env
 .yarn

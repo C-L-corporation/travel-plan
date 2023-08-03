@@ -15,10 +15,18 @@ if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
 import { passport } from './authenticate';
-import { authRouter, planRouter } from './routes';
+import { authRouter, planRouter, setSystemPrompt } from './routes';
+import { getSystemPrompt } from './utils';
 
-const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
-  process.env;
+const {
+  NODE_ENV,
+  SESSION_SECRET,
+  PORT,
+  SERVER_PORT,
+  MONGODB_URL,
+  STORAGE_PATH,
+  LOCAL_SYSTEM_PROMPT,
+} = process.env;
 
 const app = express();
 
@@ -44,6 +52,26 @@ const port = PORT ?? SERVER_PORT ?? 8000;
 server.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
+
+if (LOCAL_SYSTEM_PROMPT !== 'true' && !STORAGE_PATH) {
+  throw new Error('No google cloud storage project id');
+}
+
+const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
+// Read the text file from Cloud Storage
+getSystemPrompt({
+  localSystemPrompt: LOCAL_SYSTEM_PROMPT === 'true',
+  projectId,
+  bucketName,
+  fileName,
+})
+  .then((content: string) => {
+    if (typeof content === 'string') console.info('Got system prompt');
+    setSystemPrompt(content);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));

@@ -13,6 +13,12 @@ const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
 );
 
+let systemPrompt: string | null = null;
+// The prompt should be set before this module is imported
+export function setSystemPrompt(newPrompt: string): void {
+  systemPrompt = newPrompt;
+}
+
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 20,
