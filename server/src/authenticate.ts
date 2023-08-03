@@ -84,7 +84,7 @@ passport.use(
               userId: profile.id,
               provider: profile.provider,
             });
-            user.updateAt = new Date();
+            user.updatedAt = new Date();
             await user.save();
             console.info(
               `Google added to user ${user._id.toString()} new provider`
@@ -143,7 +143,7 @@ passport.use(
               userId: profile.id,
               provider: profile.provider,
             });
-            user.updateAt = new Date();
+            user.updatedAt = new Date();
             await user.save();
             console.info(
               `Facebook added to user ${user._id.toString()} new provider`

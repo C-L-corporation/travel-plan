@@ -8,7 +8,7 @@ type IUser = {
   isAdmin: boolean;
   plans: ReadonlyArray<ObjectId>;
   createdAt: Date;
-  updateAt: Date;
+  updatedAt: Date;
 };
 
 const userSchema = new Schema<IUser>({
@@ -19,7 +19,7 @@ const userSchema = new Schema<IUser>({
   isAdmin: { type: Boolean, default: false },
   plans: { type: [{ type: Schema.Types.ObjectId, ref: 'Plan' }], default: [] },
   createdAt: { type: Date, default: new Date() },
-  updateAt: { type: Date, default: null },
+  updatedAt: { type: Date, default: null },
 });
 
 const User = model<IUser>('User', userSchema);

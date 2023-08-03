@@ -16,14 +16,28 @@ const MOCK_DATA = JSON.parse(
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 20,
-  message: 'Plan too many times, please try again in a minute.',
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        429,
+        'Your requests are being made too rapidly. Please pause for a minute before resubmitting'
+      )
+    );
+  },
 });
 
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   // TODO: change back to 3
-  max: 10000,
-  message: 'Call GPT too many times, please try again in a minute.',
+  max: 100,
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        429,
+        "You've exceeded the maximum number of GPT calls for today. Please retry tomorrow."
+      )
+    );
+  },
 });
 
 const planRouter = express.Router();
@@ -121,7 +135,7 @@ planRouter.post(
         (req.user as UserWithParsedId).id
       ).populate({
         path: 'plans',
-        options: { sort: { createdAt: -1 } }, // sort in descending order
+        options: { sort: { createdAt: -1 }, limit: 1 },
       });
 
       if (!user) {
@@ -274,7 +288,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     nation,
     placeOfInterest,
     foodCategories,
-  })
+  });
   const { valid, message } = validateUserQuery({
     hotelLocation,
     days,
@@ -301,7 +315,7 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     console.info(querySentence);
 
     const plan = new Plan({
-      name: `${(req.user  as UserWithParsedId).name}-${MOCK_DATA.name}`,
+      name: `${(req.user as UserWithParsedId).name}-${MOCK_DATA.name}`,
       user: new ObjectId((req.user as UserWithParsedId).id),
       query: {
         hotelLocation,
@@ -317,6 +331,11 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     });
 
     await plan.save();
+
+    await User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
+      $push: { plans: plan._id },
+      $set: { updatedAt: plan.createdAt },
+    });
 
     res.send(MOCK_DATA);
   } catch (err) {
