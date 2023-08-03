@@ -48,7 +48,10 @@
       </v-col>
     </v-row>
   </v-container>
-  <div v-else class="loading">Loading...</div>
+  <div v-else class="planning">
+    <div>Planning...</div>
+    <v-progress-circular indeterminate color="#3d8994" height="6" max-width="100px"></v-progress-circular>
+  </div>
 </template>
 
 <script>
@@ -171,12 +174,13 @@ export default {
   margin-top: 10px;
 }
 
-.loading {
+.planning {
   font-family: 'Handlee', cursive;
   font-size: 40px;
   text-align: center;
   color: #3d8994;
   margin: 100px;
+
 }
 
 @media (max-width: 768px) {
@@ -231,7 +235,7 @@ export default {
     width: 100%;
   }
 
-  .loading {
+  .planning {
     font-family: 'Handlee', cursive;
     font-size: 20px;
     text-align: center;
