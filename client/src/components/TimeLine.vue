@@ -52,11 +52,17 @@
     <div>Planning...</div>
     <v-progress-circular indeterminate color="#3d8994" height="6" max-width="100px"></v-progress-circular>
   </div>
+  <div>
+    <v-alert v-if="showAlert" type="error" closable prominent location="center" position="fixed" color="#F4D3D3"
+      elevation="20" max-width="500px" title="Unable to Plan">
+      An error occurred while fetching data.
+    </v-alert>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 
 export default {
@@ -70,11 +76,12 @@ export default {
         WALKING: 'Walking',
         CAR: 'Driving'
       },
+      showAlert: false,
     }
   },
 
   computed: {
-    ...mapState('data', ['selectedData']),
+    ...mapState('data', ['selectedData'], 'error'),
     ...mapGetters('data', ['getSelectedData']),
   },
 
@@ -82,7 +89,9 @@ export default {
     this.fetchData()
   },
 
+
   methods: {
+    ...mapMutations('error', ['setError', 'clearError']),
     fetchData() {
       const {
         place,
@@ -106,10 +115,17 @@ export default {
         .then((response) => {
           console.log('timeline', response)
           this.scheduleDetail = response.data
+          this.clearError()
         })
         .catch((error) => {
           console.error(error)
+          this.setError("An error occurred while fetching data.")
+          this.handleAlert('error')
         })
+    },
+
+    handleAlert() {
+      this.showAlert = true;
     },
 
     formatTime(timestamp) {
