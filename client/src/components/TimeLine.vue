@@ -53,7 +53,7 @@
     <v-progress-circular indeterminate color="#3d8994" height="6" max-width="100px"></v-progress-circular>
   </div>
   <div>
-    <v-alert v-if="showAlert" type="error" closable prominent location="center" position="fixed" color="#F4D3D3"
+    <v-alert v-if="error" type="error" closable prominent location="center" position="fixed" color="#F4D3D3"
       elevation="20" max-width="500px" title="Unable to Plan">
       An error occurred while fetching data.
     </v-alert>
@@ -76,12 +76,12 @@ export default {
         WALKING: 'Walking',
         CAR: 'Driving'
       },
-      showAlert: false,
     }
   },
 
   computed: {
-    ...mapState('data', ['selectedData'], 'error'),
+    ...mapState('data', ['selectedData']),
+    ...mapState('error', ['error']),
     ...mapGetters('data', ['getSelectedData']),
   },
 
@@ -118,15 +118,13 @@ export default {
           this.clearError()
         })
         .catch((error) => {
-          console.error(error)
-          this.setError("An error occurred while fetching data.")
-          this.handleAlert('error')
+          if (error.response) {
+            this.setError('Error:', error.response.data.message);
+          }
         })
     },
 
-    handleAlert() {
-      this.showAlert = true;
-    },
+
 
     formatTime(timestamp) {
       const date = new Date(timestamp * 1000)
