@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-Add .env to `/server`
+Add `.env` to `/server`
 
 ```bash
 GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>

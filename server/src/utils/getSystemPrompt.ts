@@ -6,33 +6,25 @@
  *    (https://cloud.google.com/storage/docs/access-control/iam-permissions#bucket_permissions)
  */
 import { Storage } from '@google-cloud/storage';
-import fs from 'fs/promises';
 import path from 'path';
+import fs from 'fs/promises';
 
 type Options = {
-  localSystemPrompt: boolean;
-  projectId?: string;
-  bucketName?: string;
-  fileName?: string;
+  projectId: string;
+  bucketName: string;
+  fileName: string;
 };
-async function getSystemPrompt({
-  localSystemPrompt,
+export async function getSystemPrompt({
   projectId,
   bucketName,
   fileName,
 }: Options): Promise<string> {
   let content = '';
   try {
-    if (localSystemPrompt) {
-      content = await fs.readFile(
-        path.join(__dirname, '../../system_prompt.txt'),
-        'utf-8'
-      );
-      return content;
-    }
-
+    // if the storage path is not provided, read the system prompt from the local file
     if (!projectId || !bucketName || !fileName) {
-      throw new Error('Missing required arguments');
+      content = await fs.readFile(path.join(__dirname, '../../system_prompt.txt'), 'utf-8');
+      return content;
     }
 
     const storage = new Storage({ projectId });
@@ -55,5 +47,3 @@ async function getSystemPrompt({
     throw new Error(error as string);
   }
 }
-
-export default getSystemPrompt;

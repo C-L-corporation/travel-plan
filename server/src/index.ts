@@ -8,37 +8,31 @@ import session from 'express-session';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import { connect } from 'mongoose';
 
 dotenv.config();
 if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
 import { passport } from './authenticate';
-import { authRouter, planRouter, setSystemPrompt } from './routes';
-import { getSystemPrompt } from './utils';
+import { authRouter, planRouter, setSystemPrompt, setOpenAIClient } from './routes';
+import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
 
 const {
   NODE_ENV,
   SESSION_SECRET,
   PORT,
   SERVER_PORT,
-  MONGODB_URL,
   STORAGE_PATH,
-  LOCAL_SYSTEM_PROMPT,
 } = process.env;
 
 const app = express();
 
-if (!MONGODB_URL) throw new Error('MONGODB_URL not set');
-// Connect to MongoDB
-connect(MONGODB_URL)
-  .then(() => {
-    console.info('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+connectToDb();
+
+getOpenAIClient().then((openai) => {
+  console.info('Got openai client');
+  setOpenAIClient(openai);
+}).catch((error) => { console.error(error) });
 
 const server = spdy.createServer(
   {
@@ -53,21 +47,19 @@ server.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
 
-if (LOCAL_SYSTEM_PROMPT !== 'true' && !STORAGE_PATH) {
-  throw new Error('No google cloud storage project id');
+if (NODE_ENV === 'production' && !STORAGE_PATH) {
+  throw new Error('No google cloud storage path provided');
 }
-
-const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
-// Read the text file from Cloud Storage
-getSystemPrompt({
-  localSystemPrompt: LOCAL_SYSTEM_PROMPT === 'true',
-  projectId,
-  bucketName,
-  fileName,
-})
+const [projectId, bucketName, fileName] = (STORAGE_PATH?? '').split('::');
+// Read the system prompt
+getSystemPrompt({ projectId, bucketName, fileName })
   .then((content: string) => {
-    if (typeof content === 'string') console.info('Got system prompt');
-    setSystemPrompt(content);
+    if (typeof content === 'string') {
+      console.info('Got system prompt');
+      setSystemPrompt(content);
+    } else {
+      throw new Error('System prompt not found');
+    }
   })
   .catch((error) => {
     console.error(error);

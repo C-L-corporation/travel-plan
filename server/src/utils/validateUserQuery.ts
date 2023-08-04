@@ -8,7 +8,7 @@ const isTransportationType = (
 const isValidArray = (arr: unknown): arr is string[] =>
   Array.isArray(arr) && arr.every((item) => typeof item === 'string');
 
-const validateUserQuery = (
+export const validateUserQuery = (
   query: UserQuery
 ): { valid: true; message: null } | { valid: false; message: string } => {
   const {
@@ -47,5 +47,3 @@ const validateUserQuery = (
 
   return { valid: true, message: null };
 };
-
-export default validateUserQuery;

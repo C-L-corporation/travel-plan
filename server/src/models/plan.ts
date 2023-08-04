@@ -1,24 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
-import { UserQuery } from '../types';
-
-type EventType = 'ACTIVITY' | 'MEAL';
-
-type TransportationType = 'TRAIN' | 'WALK' | 'DRIVE';
-type Transportation = {
-  type: TransportationType;
-  duration: number;
-  from: string;
-  to: string;
-};
-type Event = {
-  id: number;
-  startAt: number;
-  endAt: number;
-  description: string;
-  type: EventType;
-  location: string;
-  transportation: Transportation[];
-};
+import { GptResponse, UserQuery } from '../types';
 
 type IPlan = {
   name: string;
@@ -26,15 +7,7 @@ type IPlan = {
   createdAt: Date;
   query: UserQuery;
   userPrompt: string;
-  gptResponse: {
-    name: string;
-    hotelLocation: string;
-    itinerary: {
-      day: number;
-      date: number;
-      events: Event[];
-    }[];
-  };
+  gptResponse: GptResponse;
 };
 
 const planSchema = new Schema<IPlan>({

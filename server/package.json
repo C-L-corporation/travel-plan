@@ -41,6 +41,7 @@
   "author": "Lance Hsu",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/secret-manager": "^4.2.2",
     "@google-cloud/storage": "^6.12.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

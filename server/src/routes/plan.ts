@@ -4,13 +4,14 @@ import path from 'path';
 import { rateLimit } from 'express-rate-limit';
 import { ObjectId } from 'mongodb';
 import createHttpError from 'http-errors';
-import { Configuration, OpenAIApi } from 'openai';
+import { OpenAIApi } from 'openai';
 import dontenv from 'dotenv';
 
 import { UserWithParsedId, verifyUser } from '../authenticate';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
 import { isDeepEqual, getUserPrompt, validateUserQuery } from '../utils';
+import { GptResponse } from '../types';
 
 dontenv.config();
 
@@ -18,18 +19,16 @@ dontenv.config();
 const MOCK_DATA = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
 );
-const { CHATGPT_API_KEY } = process.env;
-if (!CHATGPT_API_KEY) throw new Error('CHATGPT_API_KEY is not defined');
-
-const configuration = new Configuration({
-  apiKey: CHATGPT_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
 
 let systemPrompt: string | null = null;
 // The prompt should be set before this module is imported
 export function setSystemPrompt(newPrompt: string): void {
   systemPrompt = newPrompt;
+}
+
+let openAIClient: OpenAIApi | null = null;
+export function setOpenAIClient(openai: OpenAIApi): void {
+  openAIClient = openai;
 }
 
 const planRateLimiter = rateLimit({
@@ -312,6 +311,15 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     next(createHttpError(400, message));
   }
   try {
+    if (systemPrompt === null) {
+      next(createHttpError(500, 'Missing system prompt'));
+      return;
+    }
+    if (openAIClient === null) {
+      next(createHttpError(500, 'Missing OpenAI client'));
+      return;
+    }
+
     const userPrompt = getUserPrompt({
       hotelLocation,
       days,
@@ -322,17 +330,12 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
       foodCategories,
     });
 
-    if (systemPrompt === null) {
-      next(createHttpError(500, 'Missing system prompt'));
-      return;
-    }
-
     console.info(
       `[${(req.user as UserWithParsedId).name} (${
         (req.user as UserWithParsedId).id
       })]: ${userPrompt}`
     );
-    const chatCompletion = await openai.createChatCompletion({
+    const chatCompletion = await openAIClient.createChatCompletion({
       model: 'gpt-3.5-turbo-16k',
       temperature: 0.7,
       max_tokens: 12_000,
@@ -347,10 +350,10 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
       next(createHttpError(500, 'Missing GPT message'));
       return;
     }
-    const gptResponse = JSON.parse(gptMessage.content);
+    const gptResponse: GptResponse = JSON.parse(gptMessage.content);
 
     const plan = new Plan({
-      name: `${(req.user as UserWithParsedId).name}-${MOCK_DATA.name}`,
+      name: `${(req.user as UserWithParsedId).name}-${gptResponse.name}`,
       user: new ObjectId((req.user as UserWithParsedId).id),
       query: {
         hotelLocation,

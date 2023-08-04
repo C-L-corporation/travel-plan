@@ -1,4 +1,7 @@
-export { default as isDeepEqual } from './isDeepEqual';
-export { default as getUserPrompt } from './getUserPrompt';
-export { default as validateUserQuery } from './validateUserQuery';
-export { default as getSystemPrompt } from './getSystemPrompt';
+export { isDeepEqual } from './isDeepEqual';
+export { getUserPrompt } from './getUserPrompt';
+export { validateUserQuery } from './validateUserQuery';
+export { getSystemPrompt } from './getSystemPrompt';
+export { accessGCSecret } from './accessGCSecret';
+export { connectToDb } from './connectToDb';
+export { getOpenAIClient } from './getOpenAIClient';
