@@ -1,9 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import spdy from 'spdy';
 import morgan from 'morgan';
-import fs from 'fs';
 import session from 'express-session';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
@@ -34,16 +32,8 @@ getOpenAIClient().then((openai) => {
   setOpenAIClient(openai);
 }).catch((error) => { console.error(error) });
 
-const server = spdy.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
-  },
-  app
-);
-
 const port = PORT ?? SERVER_PORT ?? 8000;
-server.listen(port, () => {
+app.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
 
