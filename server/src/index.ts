@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import https from 'https';
+import fs from 'fs';
 import morgan from 'morgan';
 import session from 'express-session';
 import createHttpError from 'http-errors';
@@ -12,35 +14,47 @@ if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
 import { passport } from './authenticate';
-import { authRouter, planRouter, setSystemPrompt, setOpenAIClient } from './routes';
+import {
+  authRouter,
+  planRouter,
+  setSystemPrompt,
+  setOpenAIClient,
+} from './routes';
 import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
 
-const {
-  NODE_ENV,
-  SESSION_SECRET,
-  PORT,
-  SERVER_PORT,
-  STORAGE_PATH,
-} = process.env;
+const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, STORAGE_PATH } =
+  process.env;
 
 const app = express();
 
 connectToDb();
 
-getOpenAIClient().then((openai) => {
-  console.info('Got openai client');
-  setOpenAIClient(openai);
-}).catch((error) => { console.error(error) });
+getOpenAIClient()
+  .then((openai) => {
+    console.info('Got openai client');
+    setOpenAIClient(openai);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 const port = PORT ?? SERVER_PORT ?? 8000;
-app.listen(port, () => {
+
+const server = https.createServer(
+  {
+    key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem')),
+  },
+  app
+);
+server.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
 
 if (NODE_ENV === 'production' && !STORAGE_PATH) {
   throw new Error('No google cloud storage path provided');
 }
-const [projectId, bucketName, fileName] = (STORAGE_PATH?? '').split('::');
+const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
 // Read the system prompt
 getSystemPrompt({ projectId, bucketName, fileName })
   .then((content: string) => {

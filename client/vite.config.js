@@ -15,7 +15,7 @@ export default defineConfig({
       port: process.env.CLIENT_PORT,
       proxy: {
         '/api': {
-          target: `http://localhost:${process.env.SERVER_PORT}`,
+          target: `https://localhost:${process.env.SERVER_PORT}`,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, '')

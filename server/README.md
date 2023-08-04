@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-Add `.env` to `/server`
+#### Add `.env` to `/server`
 
 ```bash
 GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
@@ -18,7 +18,16 @@ STORAGE_PATH=<CLOUD_STORAGE_PROJECT_ID::BUCKET_NAME::FILENAME>
 CHATGPT_API_KEY=<CHATGPT_API_KEY>
 ```
 
-Add `system_prompt.txt` to `/server` for local development
+#### Add certificate for https
+
+1. Install OpenSSL by following the instructions on their [website](https://www.openssl.org/)
+2. Run `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365` in terminal
+3. This will generate two files: `key.pem` and `cert.pem`. These files contain your certificate and private key respectively
+4. Move these files to `/server/ssl`
+
+```bash
+
+#### Add `system_prompt.txt` to `/server` for local development
 
 ### Install Dependencies
 
