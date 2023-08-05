@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-Create an [issue](https://github.com/C-L-corporation/travel-plan/issues) or report privately
+Please kindly [report](https://github.com/C-L-corporation/travel-plan/security/advisories/new) privately
