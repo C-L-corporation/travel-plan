@@ -40,16 +40,22 @@ getOpenAIClient()
 
 const port = PORT ?? SERVER_PORT ?? 8000;
 
-const server = https.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem')),
-  },
-  app
-);
-server.listen(port, () => {
-  console.info('[Server] Listening on port: ' + port + '.');
-});
+if (NODE_ENV === 'production') {
+  app.listen(port, () => {
+    console.info('[Server] Listening on port: ' + port + '.');
+  });
+} else {
+  const server = https.createServer(
+    {
+      key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem')),
+    },
+    app
+  );
+  server.listen(port, () => {
+    console.info('[Server] Listening on port: ' + port + '.');
+  });
+}
 
 if (NODE_ENV === 'production' && !STORAGE_PATH) {
   throw new Error('No google cloud storage path provided');
