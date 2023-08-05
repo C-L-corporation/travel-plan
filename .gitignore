@@ -13,12 +13,14 @@ dist
 dist-ssr
 coverage
 *.local
+system_prompt.txt
 
 .env
 .yarn
 
 /cypress/videos/
 /cypress/screenshots/
+ssl/
 
 # Editor directories and files
 .vscode/*

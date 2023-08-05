@@ -1,49 +1,79 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import spdy from 'spdy';
-import morgan from 'morgan';
+import https from 'https';
 import fs from 'fs';
+import morgan from 'morgan';
 import session from 'express-session';
 import createHttpError from 'http-errors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import { connect } from 'mongoose';
 
 dotenv.config();
 if (process.env.NODE_ENV === 'development')
   dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 
 import { passport } from './authenticate';
-import { authRouter, planRouter } from './routes';
+import {
+  authRouter,
+  planRouter,
+  setSystemPrompt,
+  setOpenAIClient,
+} from './routes';
+import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
 
-const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, MONGODB_URL } =
+const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, STORAGE_PATH } =
   process.env;
 
 const app = express();
 
-if (!MONGODB_URL) throw new Error('MONGODB_URL not set');
-// Connect to MongoDB
-connect(MONGODB_URL)
-  .then(() => {
-    console.info('Connected to MongoDB');
+connectToDb();
+
+getOpenAIClient()
+  .then((openai) => {
+    console.info('Got openai client');
+    setOpenAIClient(openai);
   })
-  .catch((err) => {
-    console.error(err);
+  .catch((error) => {
+    console.error(error);
   });
 
-const server = spdy.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, 'ssl/localhost-privkey.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'ssl/localhost-cert.pem')),
-  },
-  app
-);
-
 const port = PORT ?? SERVER_PORT ?? 8000;
-server.listen(port, () => {
-  console.info('[Server] Listening on port: ' + port + '.');
-});
+
+if (NODE_ENV === 'production') {
+  app.listen(port, () => {
+    console.info('[Server] Listening on port: ' + port + '.');
+  });
+} else {
+  const server = https.createServer(
+    {
+      key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem')),
+    },
+    app
+  );
+  server.listen(port, () => {
+    console.info('[Server] Listening on port: ' + port + '.');
+  });
+}
+
+if (NODE_ENV === 'production' && !STORAGE_PATH) {
+  throw new Error('No google cloud storage path provided');
+}
+const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
+// Read the system prompt
+getSystemPrompt({ projectId, bucketName, fileName })
+  .then((content: string) => {
+    if (typeof content === 'string') {
+      console.info('Got system prompt');
+      setSystemPrompt(content);
+    } else {
+      throw new Error('System prompt not found');
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
@@ -82,29 +112,13 @@ if (NODE_ENV === 'development') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const swaggerUi = require('swagger-ui-express');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const swaggerJsdoc = require('swagger-jsdoc');
+  const YAML = require('yamljs');
 
-  const options = {
-    definition: {
-      openapi: '3.1.0',
-      info: {
-        title: 'Travel plan API',
-        version: '1.0.0',
-      },
-    },
-    tags: [
-      { name: 'Auth', description: 'APIs related to authentication' },
-      { name: 'Plans', description: 'APIs for managing plans' },
-    ],
-    apis: [
-      path.resolve(__dirname, '../docs/components.yaml'),
-      `${__dirname}/routes/*.ts`,
-    ],
-  };
+  const swaggerDocument = YAML.load(
+    path.join(__dirname, '../docs/swagger.yaml')
+  );
 
-  const specs = swaggerJsdoc(options);
-
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   console.info('Swagger UI available at /api-docs');
 }
 

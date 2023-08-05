@@ -19,7 +19,7 @@ export default {
     try {
       if (this.$route.path === '/planning') {
         const token = Cookies.get('token')
-        axios.defaults.headers.common = { Authorization: `bearer ${token}` }
+        axios.defaults.headers.common = { Authorization: `Bearer ${token}` }
         Cookies.remove('token', { path: '/planning' })
         await this.fetchUserName()
       }

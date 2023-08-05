@@ -1,17 +1,28 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import { rateLimit } from 'express-rate-limit';
-import { UserWithParsedId, verifyUser } from '../authenticate';
+import { ObjectId } from 'mongodb';
 import createHttpError from 'http-errors';
+import { OpenAIApi } from 'openai';
+import dontenv from 'dotenv';
+
+import { UserWithParsedId, verifyUser } from '../authenticate';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
-import { isDeepEqual, getUserQuerySentence, validateUserQuery } from '../utils';
-import { ObjectId } from 'mongodb';
+import { isDeepEqual, getUserPrompt, validateUserQuery } from '../utils';
+import { GptResponse } from '../types';
 
-const MOCK_DATA = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
-);
+dontenv.config();
+
+let systemPrompt: string | null = null;
+// The prompt should be set before this module is imported
+export function setSystemPrompt(newPrompt: string): void {
+  systemPrompt = newPrompt;
+}
+
+let openAIClient: OpenAIApi | null = null;
+export function setOpenAIClient(openai: OpenAIApi): void {
+  openAIClient = openai;
+}
 
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -29,7 +40,7 @@ const planRateLimiter = rateLimit({
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   // TODO: change back to 3
-  max: 100,
+  max: 3,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -43,63 +54,6 @@ const gptRateLimiter = rateLimit({
 const planRouter = express.Router();
 planRouter.use(express.json());
 
-/**
- * @swagger
- * /plan/same-query-check:
- *   post:
- *     summary: Checks if the new query matches the latest one
- *     tags:
- *       - Plan
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - hotelLocation
- *               - days
- *               - transportation
- *               - city
- *               - nation
- *               - placeOfInterest
- *               - foodCategories
- *             properties:
- *               hotelLocation:
- *                 type: string
- *               days:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 7
- *               transportation:
- *                 type: string
- *                 enum: [PUBLIC, PRIVATE]
- *               city:
- *                 type: string
- *               nation:
- *                 type: string
- *               placeOfInterest:
- *                 type: array
- *                 items:
- *                   type: string
- *               foodCategories:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: Boolean indicating if the new query matches the latest one
- *         content:
- *           application/json:
- *             schema:
- *               type: boolean
- *       400:
- *         description: Missing required fields or invalid inputs
- *       401:
- *         description: Unauthorized
- */
 planRouter.post(
   '/same-query-check',
   planRateLimiter,
@@ -163,27 +117,6 @@ planRouter.post(
   }
 );
 
-/**
- * @swagger
- * /plan/latest:
- *  get:
- *    summary: Get the latest plan of the current user
- *    tags:
- *      - Plans
- *    security:
- *      - BearerAuth: []
- *    responses:
- *      '200':
- *        description: The latest plan was returned successfully.
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Plan'
- *      '401':
- *        description: No authorization or user not found.
- *      '500':
- *        description: Unexpected error.
- */
 planRouter.get(
   '/latest',
   planRateLimiter,
@@ -204,70 +137,13 @@ planRouter.get(
         return;
       }
       const [latestPlan] = user.plans as unknown as IPlan[];
-      return res.send(latestPlan);
+      return res.json(latestPlan);
     } catch (err) {
       next(err);
     }
   }
 );
 
-/**
- * @swagger
- * /plan/new:
- *   post:
- *     summary: Create a new travel plan
- *     tags:
- *       - Plan
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - hotelLocation
- *               - days
- *               - transportation
- *               - city
- *               - nation
- *               - placeOfInterest
- *               - foodCategories
- *             properties:
- *               hotelLocation:
- *                 type: string
- *               days:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 7
- *               transportation:
- *                 type: string
- *                 enum: [PUBLIC, PRIVATE]
- *               city:
- *                 type: string
- *               nation:
- *                 type: string
- *               placeOfInterest:
- *                 type: array
- *                 items:
- *                   type: string
- *               foodCategories:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: The created travel plan
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Plan'
- *       400:
- *         description: Missing required fields or invalid inputs
- *       401:
- *         description: Unauthorized
- */
 planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
   const {
     hotelLocation,
@@ -279,16 +155,6 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     foodCategories,
   } = req.body;
 
-  // TODO: remove it
-  console.log('request', {
-    hotelLocation,
-    days,
-    transportation,
-    city,
-    nation,
-    placeOfInterest,
-    foodCategories,
-  });
   const { valid, message } = validateUserQuery({
     hotelLocation,
     days,
@@ -303,7 +169,16 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     next(createHttpError(400, message));
   }
   try {
-    const querySentence = getUserQuerySentence({
+    if (systemPrompt === null) {
+      next(createHttpError(500, 'Missing system prompt'));
+      return;
+    }
+    if (openAIClient === null) {
+      next(createHttpError(500, 'Missing OpenAI client'));
+      return;
+    }
+
+    const userPrompt = getUserPrompt({
       hotelLocation,
       days,
       transportation,
@@ -312,10 +187,31 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
       placeOfInterest,
       foodCategories,
     });
-    console.info(querySentence);
+
+    console.info(
+      `[${(req.user as UserWithParsedId).name} (${
+        (req.user as UserWithParsedId).id
+      })]: ${userPrompt}`
+    );
+    const chatCompletion = await openAIClient.createChatCompletion({
+      model: 'gpt-3.5-turbo-16k',
+      temperature: 0.7,
+      max_tokens: 12_000,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
+
+    const gptMessage = chatCompletion.data.choices[0].message;
+    if (!gptMessage || !gptMessage.content) {
+      next(createHttpError(500, 'Missing GPT message'));
+      return;
+    }
+    const gptResponse: GptResponse = JSON.parse(gptMessage.content);
 
     const plan = new Plan({
-      name: `${(req.user as UserWithParsedId).name}-${MOCK_DATA.name}`,
+      name: `${(req.user as UserWithParsedId).name}-${gptResponse.name}`,
       user: new ObjectId((req.user as UserWithParsedId).id),
       query: {
         hotelLocation,
@@ -326,18 +222,19 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
         placeOfInterest,
         foodCategories,
       },
-      querySentence,
-      gptResponse: MOCK_DATA,
+      userPrompt,
+      gptResponse,
     });
 
-    await plan.save();
+    await Promise.all([
+      plan.save(),
+      User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
+        $push: { plans: plan._id },
+        $set: { updatedAt: plan.createdAt },
+      }),
+    ]);
 
-    await User.findByIdAndUpdate((req.user as UserWithParsedId).id, {
-      $push: { plans: plan._id },
-      $set: { updatedAt: plan.createdAt },
-    });
-
-    res.send(MOCK_DATA);
+    res.json(gptResponse);
   } catch (err) {
     next(err);
   }

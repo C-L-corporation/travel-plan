@@ -23,7 +23,7 @@ type UserWithId = IUser & { _id: ObjectId };
 
 const authRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 5,
+  max: 30,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -34,44 +34,23 @@ const authRateLimiter = rateLimit({
   },
 });
 
+authRouter.use(authRateLimiter);
+
 // Auth
-/**
- * @swagger
- * /auth/google:
- *   get:
- *     summary: Authenticate with Google
- *     tags: [Auth]
- *     description: Redirects to Google for authentication, asking for profile and email permissions.
- *     responses:
- *       302:
- *         description: Redirect to Google's OAuth consent screen.
- */
 authRouter.get(
   '/google',
-  authRateLimiter,
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-/**
- * @swagger
- * /auth/facebook:
- *   get:
- *     summary: Authenticate with Facebook
- *     tags: [Auth]
- *     description: Redirects to Facebook for authentication, asking for public profile and email permissions.
- *     responses:
- *       302:
- *         description: Redirect to Facebook's OAuth consent screen.
- */
+
 authRouter.get(
   '/facebook',
-  authRateLimiter,
   passport.authenticate('facebook', { scope: ['public_profile', 'email'] })
 );
 
 // Auth Callback
 authRouter.get(
   GOOGLE_AUTH_CALLBACK_ROUTE,
-  authRateLimiter,
+
   passport.authenticate('google', {
     failureRedirect: LANDING_PAGE_ROUTE,
     session: false,
@@ -101,7 +80,6 @@ authRouter.get(
 
 authRouter.get(
   FACEBOOK_AUTH_CALLBACK_ROUTE,
-  authRateLimiter,
   passport.authenticate('facebook', {
     failureRedirect: LANDING_PAGE_ROUTE,
     session: false,
@@ -135,25 +113,7 @@ authRouter.get(
   }
 );
 
-/**
- * @swagger
- * /auth/me:
- *   get:
- *     summary: Retrieves the details of the current user.
- *     tags: [Auth]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       '200':
- *         description: The details of the current user.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       '401':
- *         description: Unauthorized, the user is not logged in.
- */
-authRouter.get('/me', authRateLimiter, verifyUser, async (req, res, next) => {
+authRouter.get('/me', verifyUser, async (req, res, next) => {
   try {
     if (!req.user) next(createHttpError(401));
 
