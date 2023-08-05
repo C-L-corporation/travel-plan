@@ -56,7 +56,7 @@
 
 <script>
 import axios from 'axios'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 
 export default {
@@ -75,6 +75,7 @@ export default {
 
   computed: {
     ...mapState('data', ['selectedData']),
+    ...mapState('error', ['error']),
     ...mapGetters('data', ['getSelectedData']),
   },
 
@@ -82,7 +83,9 @@ export default {
     this.fetchData()
   },
 
+
   methods: {
+    ...mapMutations('error', ['setError', 'clearError']),
     fetchData() {
       const {
         place,
@@ -104,13 +107,19 @@ export default {
           foodCategories: food,
         })
         .then((response) => {
-          console.log('timeline', response)
+          this.clearError()
           this.scheduleDetail = response.data
         })
         .catch((error) => {
-          console.error(error)
+          if (error.response) {
+            this.setError(error.response.data.message);
+          } else {
+            console.error(error);
+          }
         })
     },
+
+
 
     formatTime(timestamp) {
       const date = new Date(timestamp * 1000)
