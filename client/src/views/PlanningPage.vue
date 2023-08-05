@@ -26,13 +26,13 @@
 
       <div class="contentpaper">
         <div>What you want to See</div>
-        <v-select class="selectors" label="(multiple)" v-model="selectSites" :items="sites" variant="solo"
+        <v-select class="selectors" placeholder="Random" v-model="selectSites" :items="sites" variant="solo"
           multiple></v-select>
       </div>
 
       <div class="contentpaper">
         <div>What you want to Eat</div>
-        <v-select class="selectors" label="(multiple)" v-model="selectFoods" :items="foods" variant="solo"
+        <v-select class="selectors" placeholder="Random" v-model="selectFoods" :items="foods" variant="solo"
           multiple></v-select>
       </div>
     </div>
@@ -72,39 +72,12 @@ export default {
         'Chuo Area (East)',
         'Taito Area (North)'
       ],
-      selectSites: ['Random'],
+      selectSites: [],
       sites: ['Shopping', 'Historic Site', 'Nature', 'Museum', 'Aqurium', 'Animals'],
-      selectFoods: ['Random'],
+      selectFoods: [],
       foods: ['Ramen', 'Udon', 'Japanese BBQ', 'Sushi', 'Sashimi', 'Hotpot', 'Dessert', 'Alcohol'],
     }
   },
-
-  watch: {
-    selectSites(site) {
-      if (site.length === 0) {
-        setTimeout(() => {
-          this.selectSites = ['Random'];
-        }, 0);
-      } else if (site.length > 1 && site.includes('Random')) {
-        setTimeout(() => {
-          this.selectSites = site.filter(item => item !== 'Random');
-        }, 0);
-      }
-      console.log('planning', site)
-    },
-    selectFoods(food) {
-      if (food.length === 0) {
-        setTimeout(() => {
-          this.selectFoods = ['Random'];
-        }, 0);
-      } else if (food.length > 1 && food.includes('Random')) {
-        setTimeout(() => {
-          this.selectFoods = food.filter(item => item !== 'Random')
-        }, 0);
-      }
-    }
-  },
-
 
   methods: {
     ...mapMutations('data', ['setSelectedData']),

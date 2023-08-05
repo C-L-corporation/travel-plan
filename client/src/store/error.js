@@ -1,6 +1,6 @@
 const error ={
   namespaced: true,
-  
+
   state(){
     return {
       error: null
@@ -9,7 +9,6 @@ const error ={
   mutations: {
     setError(state, errorMessage) {
       state.error = errorMessage;
-      console.log('vuex',errorMessage)
     },
     clearError(state) {
       state.error = null;

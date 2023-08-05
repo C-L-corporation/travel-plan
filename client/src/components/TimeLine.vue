@@ -52,12 +52,6 @@
     <div>Planning...</div>
     <v-progress-circular indeterminate color="#3d8994" height="6" max-width="100px"></v-progress-circular>
   </div>
-  <div>
-    <v-alert v-if="error" type="error" closable prominent location="center" position="fixed" color="#F4D3D3"
-      elevation="20" max-width="500px" title="Unable to Plan">
-      An error occurred while fetching data.
-    </v-alert>
-  </div>
 </template>
 
 <script>
@@ -113,13 +107,14 @@ export default {
           foodCategories: food,
         })
         .then((response) => {
-          console.log('timeline', response)
-          this.scheduleDetail = response.data
           this.clearError()
+          this.scheduleDetail = response.data
         })
         .catch((error) => {
           if (error.response) {
-            this.setError('Error:', error.response.data.message);
+            this.setError(error.response.data.message);
+          } else {
+            console.error(error);
           }
         })
     },
