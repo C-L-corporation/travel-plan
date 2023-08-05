@@ -1,6 +1,4 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import { rateLimit } from 'express-rate-limit';
 import { ObjectId } from 'mongodb';
 import createHttpError from 'http-errors';
@@ -14,11 +12,6 @@ import { isDeepEqual, getUserPrompt, validateUserQuery } from '../utils';
 import { GptResponse } from '../types';
 
 dontenv.config();
-
-// ChatGPT setup
-const MOCK_DATA = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../mock_plan.json'), 'utf8')
-);
 
 let systemPrompt: string | null = null;
 // The prompt should be set before this module is imported
