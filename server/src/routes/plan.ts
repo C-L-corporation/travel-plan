@@ -61,63 +61,6 @@ const gptRateLimiter = rateLimit({
 const planRouter = express.Router();
 planRouter.use(express.json());
 
-/**
- * @swagger
- * /plan/same-query-check:
- *   post:
- *     summary: Checks if the new query matches the latest one
- *     tags:
- *       - Plan
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - hotelLocation
- *               - days
- *               - transportation
- *               - city
- *               - nation
- *               - placeOfInterest
- *               - foodCategories
- *             properties:
- *               hotelLocation:
- *                 type: string
- *               days:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 7
- *               transportation:
- *                 type: string
- *                 enum: [PUBLIC, PRIVATE]
- *               city:
- *                 type: string
- *               nation:
- *                 type: string
- *               placeOfInterest:
- *                 type: array
- *                 items:
- *                   type: string
- *               foodCategories:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: Boolean indicating if the new query matches the latest one
- *         content:
- *           application/json:
- *             schema:
- *               type: boolean
- *       400:
- *         description: Missing required fields or invalid inputs
- *       401:
- *         description: Unauthorized
- */
 planRouter.post(
   '/same-query-check',
   planRateLimiter,
@@ -181,27 +124,6 @@ planRouter.post(
   }
 );
 
-/**
- * @swagger
- * /plan/latest:
- *  get:
- *    summary: Get the latest plan of the current user
- *    tags:
- *      - Plans
- *    security:
- *      - BearerAuth: []
- *    responses:
- *      '200':
- *        description: The latest plan was returned successfully.
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Plan'
- *      '401':
- *        description: No authorization or user not found.
- *      '500':
- *        description: Unexpected error.
- */
 planRouter.get(
   '/latest',
   planRateLimiter,
@@ -229,63 +151,6 @@ planRouter.get(
   }
 );
 
-/**
- * @swagger
- * /plan/new:
- *   post:
- *     summary: Create a new travel plan
- *     tags:
- *       - Plan
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - hotelLocation
- *               - days
- *               - transportation
- *               - city
- *               - nation
- *               - placeOfInterest
- *               - foodCategories
- *             properties:
- *               hotelLocation:
- *                 type: string
- *               days:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 7
- *               transportation:
- *                 type: string
- *                 enum: [PUBLIC, PRIVATE]
- *               city:
- *                 type: string
- *               nation:
- *                 type: string
- *               placeOfInterest:
- *                 type: array
- *                 items:
- *                   type: string
- *               foodCategories:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: The created travel plan
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Plan'
- *       400:
- *         description: Missing required fields or invalid inputs
- *       401:
- *         description: Unauthorized
- */
 planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
   const {
     hotelLocation,

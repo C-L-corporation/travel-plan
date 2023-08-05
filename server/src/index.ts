@@ -106,29 +106,13 @@ if (NODE_ENV === 'development') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const swaggerUi = require('swagger-ui-express');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const swaggerJsdoc = require('swagger-jsdoc');
+  const YAML = require('yamljs');
 
-  const options = {
-    definition: {
-      openapi: '3.1.0',
-      info: {
-        title: 'Travel plan API',
-        version: '1.0.0',
-      },
-    },
-    tags: [
-      { name: 'Auth', description: 'APIs related to authentication' },
-      { name: 'Plans', description: 'APIs for managing plans' },
-    ],
-    apis: [
-      path.resolve(__dirname, '../docs/components.yaml'),
-      `${__dirname}/routes/*.ts`,
-    ],
-  };
+  const swaggerDocument = YAML.load(
+    path.join(__dirname, '../docs/swagger.yaml')
+  );
 
-  const specs = swaggerJsdoc(options);
-
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   console.info('Swagger UI available at /api-docs');
 }
 
