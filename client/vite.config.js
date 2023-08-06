@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
-import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import dotenv from 'dotenv'
+const { fileURLToPath, URL } = require('url')
+const { defineConfig } = require('vite')
+const vue = require('@vitejs/plugin-vue')
+const dotenv = require('dotenv')
 
 // .env.development in root folder
 if (process.env.NODE_ENV === 'development') dotenv.config({ path: '../.env.development' })
+
 // https://vitejs.dev/config/
-export default defineConfig({
+module.exports = defineConfig({
   plugins: [vue()],
   ...(process.env.NODE_ENV === 'development' && {
     server: {
@@ -25,7 +25,7 @@ export default defineConfig({
   }),
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', __dirname + '/'))
     }
   }
 })
