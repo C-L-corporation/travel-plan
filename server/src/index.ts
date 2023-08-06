@@ -18,23 +18,33 @@ import {
   setSystemPrompt,
   setOpenAIClient,
 } from './routes';
-import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
+import { getSystemPrompt } from './utils';
+import { Configuration, OpenAIApi } from 'openai';
+import { connect } from 'mongoose';
 
-const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT } =
-  process.env;
+const {
+  NODE_ENV,
+  SESSION_SECRET,
+  PORT,
+  SERVER_PORT,
+  CHATGPT_API_KEY,
+  MONGODB_URL,
+} = process.env;
 
 const app = express();
 
-connectToDb();
+if (!MONGODB_URL) throw new Error('No MongoDB URL provided');
+connect(MONGODB_URL)
+  .then(() => console.log('connected to db'))
+  .catch((err) => console.log(err));
 
-getOpenAIClient()
-  .then((openai) => {
-    console.info('Got openai client');
-    setOpenAIClient(openai);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+if (!CHATGPT_API_KEY) throw new Error('No chatGPT key provided');
+
+const configuration = new Configuration({
+  apiKey: CHATGPT_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+setOpenAIClient(openai);
 
 const port = PORT ?? SERVER_PORT ?? 8000;
 

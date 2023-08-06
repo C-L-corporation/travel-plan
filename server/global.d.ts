@@ -7,13 +7,12 @@ declare namespace NodeJS {
     FACEBOOK_APP_SECRET: string;
     SESSION_SECRET: string;
     JWT_SECRET: string;
+    CHATGPT_API_KEY: string;
+    MONGODB_URL: string;
     // production environment variables
     PORT?: string;
     STORAGE_PATH: string;
-    GC_SECRET_PARENT: string;
     // development environment variables
-    MONGODB_URL?: string;
-    CHATGPT_API_KEY?: string;
     CLIENT_PORT?: string;
     SERVER_PORT?: string;
   }
