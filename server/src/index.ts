@@ -1,8 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import https from 'https';
-import fs from 'fs';
 import morgan from 'morgan';
 import session from 'express-session';
 import createHttpError from 'http-errors';
@@ -20,37 +18,42 @@ import {
   setSystemPrompt,
   setOpenAIClient,
 } from './routes';
-import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
+import { getSystemPrompt } from './utils';
+import { Configuration, OpenAIApi } from 'openai';
+import { connect } from 'mongoose';
 
-const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, STORAGE_PATH } =
-  process.env;
+const {
+  NODE_ENV,
+  SESSION_SECRET,
+  PORT,
+  SERVER_PORT,
+  CHATGPT_API_KEY,
+  MONGODB_URL,
+} = process.env;
 
 const app = express();
 
-connectToDb();
+if (!MONGODB_URL) throw new Error('No MongoDB URL provided');
+connect(MONGODB_URL)
+  .then(() => console.log('connected to db'))
+  .catch((err) => console.log(err));
 
-getOpenAIClient()
-  .then((openai) => {
-    console.info('Got openai client');
-    setOpenAIClient(openai);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+if (!CHATGPT_API_KEY) throw new Error('No chatGPT key provided');
+
+const configuration = new Configuration({
+  apiKey: CHATGPT_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+setOpenAIClient(openai);
 
 const port = PORT ?? SERVER_PORT ?? 8000;
 
+app.listen(port, () => {
+  console.info('[Server] Listening on port: ' + port + '.');
+});
 
-  app.listen(port, () => {
-    console.info('[Server] Listening on port: ' + port + '.');
-  });
-
-if (NODE_ENV === 'production' && !STORAGE_PATH) {
-  throw new Error('No google cloud storage path provided');
-}
-const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
 // Read the system prompt
-getSystemPrompt({ projectId, bucketName, fileName })
+getSystemPrompt()
   .then((content: string) => {
     if (typeof content === 'string') {
       console.info('Got system prompt');

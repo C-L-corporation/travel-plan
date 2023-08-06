@@ -202,7 +202,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Provider'
-        isAdmin:
+        admin:
           type: boolean
           default: false
           example: false
