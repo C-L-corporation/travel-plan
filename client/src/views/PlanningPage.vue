@@ -37,10 +37,29 @@
       </div>
     </div>
 
-
-    <router-link to="/itinerary">
-      <v-btn class="button" size="x-large" @click="createItinerary">Create !</v-btn>
-    </router-link>
+    <div>
+      <v-btn class="button" size="x-large" @click="openDialog">
+        Create!
+      </v-btn>
+      <v-dialog v-model="dialog" persistent width="600" class="dialog">
+        <v-card elevation="20">
+          <v-card-title class="card-title">
+            Ready to plan?
+          </v-card-title>
+          <v-card-text class="card-text"> Each user only have 3 times a day to plan. </v-card-text>
+          <v-card-actions>
+            <v-row justify="space-evenly">
+              <v-btn class="card-button" @click="dialog = false">
+                Think again
+              </v-btn>
+              <v-btn class="card-button" @click="planNow">
+                Plan now
+              </v-btn>
+            </v-row>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
 
     <img class="suitcase" src="/images/suitcase.png" />
     <img class="camera" src="/images/camera.png" />
@@ -76,12 +95,13 @@ export default {
       sites: ['Shopping', 'Historic Site', 'Nature', 'Museum', 'Aqurium', 'Animals'],
       selectFoods: [],
       foods: ['Ramen', 'Udon', 'Japanese BBQ', 'Sushi', 'Sashimi', 'Hotpot', 'Dessert', 'Alcohol'],
+      dialog: false,
     }
   },
 
   methods: {
     ...mapMutations('data', ['setSelectedData']),
-    createItinerary() {
+    setItineraryQuery() {
       const selectedData = {
         place: this.selectPlace,
         day: parseInt(this.selectDay, 10),
@@ -91,9 +111,17 @@ export default {
         food: this.selectFoods
       };
       this.setSelectedData(selectedData);
-    }
-  }
+    },
+    openDialog() {
+      this.setItineraryQuery();
+      this.dialog = true;
+    },
+    planNow() {
+      this.$router.push('/itinerary')
+    },
+  },
 }
+
 </script>
 
 <style scoped>
@@ -156,6 +184,39 @@ export default {
   background-color: #3d8994;
 }
 
+.dialog {
+  font-family: 'Handlee', cursive;
+  font-size: 25px;
+  font-weight: bold;
+  color: #3b342a;
+  text-align: center;
+}
+
+.card-title {
+  font-family: 'Satisfy', cursive;
+  font-size: 35px;
+  font-weight: bold;
+  color: #3b342a;
+  margin-top: 20px;
+
+}
+
+.card-text {
+  font-family: 'Handlee', cursive;
+  color: #3b342a;
+  margin: 10px;
+}
+
+.card-button {
+  font-weight: bold;
+  color: #3d8994;
+}
+
+.card-button:hover {
+  font-weight: bold;
+  color: white;
+  background-color: #3d8994;
+}
 
 /* images */
 .suitcase {
@@ -240,6 +301,39 @@ export default {
     background-color: #3d8994;
   }
 
+  .dialog {
+    font-family: 'Handlee', cursive;
+    font-size: 25px;
+    font-weight: bold;
+    color: #3b342a;
+    text-align: center;
+  }
+
+  .card-title {
+    font-family: 'Satisfy', cursive;
+    font-size: 35px;
+    font-weight: bold;
+    color: #3b342a;
+    margin-top: 20px;
+
+  }
+
+  .card-text {
+    font-family: 'Handlee', cursive;
+    color: #3b342a;
+    margin: 10px;
+  }
+
+  .card-button {
+    font-weight: bold;
+    color: #3d8994;
+  }
+
+  .card-button:hover {
+    font-weight: bold;
+    color: white;
+    background-color: #3d8994;
+  }
 
   /* images */
   .suitcase {
