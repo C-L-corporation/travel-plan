@@ -40,10 +40,9 @@ getOpenAIClient()
 
 const port = PORT ?? SERVER_PORT ?? 8000;
 
-
-  app.listen(port, () => {
-    console.info('[Server] Listening on port: ' + port + '.');
-  });
+app.listen(port, () => {
+  console.info('[Server] Listening on port: ' + port + '.');
+});
 
 if (NODE_ENV === 'production' && !STORAGE_PATH) {
   throw new Error('No google cloud storage path provided');

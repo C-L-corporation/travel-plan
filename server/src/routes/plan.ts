@@ -8,7 +8,7 @@ import dontenv from 'dotenv';
 import { UserWithParsedId, verifyUser } from '../authenticate';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
-import { isDeepEqual, getUserPrompt, validateUserQuery } from '../utils';
+import { isDeepEqual, getUserPrompt, validateUserQuery, checkIsValidToCallChatGPT } from '../utils';
 import { GptResponse } from '../types';
 
 dontenv.config();
@@ -26,7 +26,7 @@ export function setOpenAIClient(openai: OpenAIApi): void {
 
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20,
+  max: 30,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -39,8 +39,7 @@ const planRateLimiter = rateLimit({
 
 const gptRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  // TODO: change back to 3
-  max: 3,
+  max: 10,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -129,14 +128,14 @@ planRouter.get(
         (req.user as UserWithParsedId).id
       ).populate({
         path: 'plans',
-        options: { sort: { createdAt: -1 } }, // sort in descending order
+        options: { sort: { createdAt: -1 }, limit: 1 }, // sort in descending order
       });
 
       if (!user) {
         next(createHttpError(401));
         return;
       }
-      const [latestPlan] = user.plans as unknown as IPlan[];
+      const [latestPlan] = user.plans as unknown as [IPlan];
       return res.json(latestPlan);
     } catch (err) {
       next(err);
@@ -176,6 +175,15 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
     if (openAIClient === null) {
       next(createHttpError(500, 'Missing OpenAI client'));
       return;
+    }
+    const isValidToCallChatGPT = await checkIsValidToCallChatGPT(req.user as UserWithParsedId);
+    if (!isValidToCallChatGPT) {
+      next(
+        createHttpError(
+          400,
+          'You have exceeded the maximum number of GPT calls for today. Please retry tomorrow.'
+        )
+      );
     }
 
     const userPrompt = getUserPrompt({

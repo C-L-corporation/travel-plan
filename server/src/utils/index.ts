@@ -5,3 +5,4 @@ export { getSystemPrompt } from './getSystemPrompt';
 export { accessGCSecret } from './accessGCSecret';
 export { connectToDb } from './connectToDb';
 export { getOpenAIClient } from './getOpenAIClient';
+export { checkIsValidToCallChatGPT } from './checkIsValidToCallChatGPT';
