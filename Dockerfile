@@ -7,9 +7,6 @@ WORKDIR /usr/src/app
 # Set Node environment variable to production
 ENV NODE_ENV=production
 
-# Update yarn to the version required
-RUN npm install --global yarn@3.6.1
-
 # Copy package.json, yarn.lock and package.json files in client and server directories
 COPY package*.json yarn.lock ./
 COPY client/package*.json ./client/
