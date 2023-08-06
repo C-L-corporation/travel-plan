@@ -20,7 +20,6 @@ system_prompt.txt
 
 /cypress/videos/
 /cypress/screenshots/
-ssl/
 
 # Editor directories and files
 .vscode/*

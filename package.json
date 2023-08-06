@@ -6,7 +6,8 @@
     "url": "https://github.com/chrischlin/travel-plan"
   },
   "engines": {
-    "node": "^18.17.0"
+    "node": "^18.17.0",
+    "yarn": "^3.6.1"
   },
   "workspaces": [
     "client",
