@@ -96,9 +96,11 @@ export default {
         food
       } = this.selectedData;
 
+      const nation = this.getNation(place)
+
       axios
         .post('/api/plan/new', {
-          nation: place,
+          nation: nation,
           city: place,
           days: day,
           transportation: tran,
@@ -119,7 +121,14 @@ export default {
         })
     },
 
-
+    getNation(place) {
+      switch (place) {
+        case 'Tokyo':
+          return 'Japan';
+        default:
+          console.error('')
+      }
+    },
 
     formatTime(timestamp) {
       const date = new Date(timestamp * 1000)
