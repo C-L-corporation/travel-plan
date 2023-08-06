@@ -103,7 +103,7 @@ export default {
           nation: nation,
           city: place,
           days: day,
-          transportation: tran,
+          transportation: 'tran',
           hotelLocation: hotel,
           placeOfInterest: site,
           foodCategories: food,

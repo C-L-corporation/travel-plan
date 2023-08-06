@@ -1,6 +1,6 @@
 <template>
-    <v-alert v-model="showAlert" type="error" closable prominent location="center" position="fixed" color="#F4D3D3"
-        elevation="20" max-width="500px" title="Unable to Plan">
+    <v-alert class="alert" v-model="showAlert" type="error" closable prominent location="center" position="fixed"
+        color="#F4D3D3" elevation="20" max-width="500px" title="Unable to Plan">
         {{ error }}
     </v-alert>
 </template>
@@ -37,3 +37,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.alert {
+    z-index: 999;
+}
+</style>
