@@ -12,6 +12,8 @@ COPY package*.json yarn.lock ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
+# Install Vite globally
+RUN yarn global add vite
 # Install dependencies
 RUN yarn install --production
 
