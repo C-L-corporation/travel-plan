@@ -1,8 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import https from 'https';
-import fs from 'fs';
 import morgan from 'morgan';
 import session from 'express-session';
 import createHttpError from 'http-errors';
@@ -22,7 +20,7 @@ import {
 } from './routes';
 import { connectToDb, getOpenAIClient, getSystemPrompt } from './utils';
 
-const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT, STORAGE_PATH } =
+const { NODE_ENV, SESSION_SECRET, PORT, SERVER_PORT } =
   process.env;
 
 const app = express();
@@ -44,12 +42,8 @@ app.listen(port, () => {
   console.info('[Server] Listening on port: ' + port + '.');
 });
 
-if (NODE_ENV === 'production' && !STORAGE_PATH) {
-  throw new Error('No google cloud storage path provided');
-}
-const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
 // Read the system prompt
-getSystemPrompt({ projectId, bucketName, fileName })
+getSystemPrompt()
   .then((content: string) => {
     if (typeof content === 'string') {
       console.info('Got system prompt');

@@ -8,24 +8,25 @@
 import { Storage } from '@google-cloud/storage';
 import path from 'path';
 import fs from 'fs/promises';
+import dotenv from 'dotenv';
 
-type Options = {
-  projectId: string;
-  bucketName: string;
-  fileName: string;
-};
-export async function getSystemPrompt({
-  projectId,
-  bucketName,
-  fileName,
-}: Options): Promise<string> {
+dotenv.config();
+
+const { NODE_ENV, STORAGE_PATH } =
+  process.env;
+
+export async function getSystemPrompt(): Promise<string> {
   let content = '';
   try {
     // if the storage path is not provided, read the system prompt from the local file
-    if (!projectId || !bucketName || !fileName) {
+    if (NODE_ENV === 'development') {
       content = await fs.readFile(path.join(__dirname, '../../system_prompt.txt'), 'utf-8');
       return content;
     }
+
+    if (!STORAGE_PATH) throw new Error('No google cloud storage path provided');
+
+    const [projectId, bucketName, fileName] = (STORAGE_PATH ?? '').split('::');
 
     const storage = new Storage({ projectId });
 
