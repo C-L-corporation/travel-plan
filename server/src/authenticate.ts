@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
+// import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
 import { type IUser, User } from './models';
@@ -8,8 +8,8 @@ import { type IUser, User } from './models';
 const {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  FACEBOOK_APP_ID,
-  FACEBOOK_APP_SECRET,
+  // FACEBOOK_APP_ID,
+  // FACEBOOK_APP_SECRET,
   JWT_SECRET,
 } = process.env;
 
@@ -100,69 +100,69 @@ passport.use(
   )
 );
 
-if (!FACEBOOK_APP_ID) throw new Error('FACEBOOK_APP_ID not set');
-if (!FACEBOOK_APP_SECRET) throw new Error('FACEBOOK_APP_SECRET not set');
+// if (!FACEBOOK_APP_ID) throw new Error('FACEBOOK_APP_ID not set');
+// if (!FACEBOOK_APP_SECRET) throw new Error('FACEBOOK_APP_SECRET not set');
 
-// Facebook passport strategy
-const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: FACEBOOK_APP_ID,
-      clientSecret: FACEBOOK_APP_SECRET,
-      callbackURL: `/api/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
-      profileFields: ['id', 'displayName', 'photos', 'email'],
-    },
-    async function (accessToken, refreshToken, profile, done) {
-      try {
-        const email = profile.emails?.[0].value ?? null;
+// Facebook passport strategy (not used due to business verification)
+// const FACEBOOK_AUTH_CALLBACK_ROUTE = '/facebook/callback';
+// passport.use(
+//   new FacebookStrategy(
+//     {
+//       clientID: FACEBOOK_APP_ID,
+//       clientSecret: FACEBOOK_APP_SECRET,
+//       callbackURL: `/api/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
+//       profileFields: ['id', 'displayName', 'photos', 'email'],
+//     },
+//     async function (accessToken, refreshToken, profile, done) {
+//       try {
+//         const email = profile.emails?.[0].value ?? null;
 
-        const query = email
-          ? { email }
-          : {
-              providers: {
-                $elemMatch: { userId: profile.id, provider: profile.provider },
-              },
-            };
-        let user = await User.findOne(query);
-        if (!user) {
-          user = new User({
-            name: profile.displayName,
-            providers: [{ userId: profile.id, provider: profile.provider }],
-            photo: profile.photos?.[0]?.value ?? null,
-            email: profile.emails?.[0].value ?? null,
-          });
-          await user.save();
-          console.info(
-            'New user from Facebook (user id: %s) created',
-            profile.id
-          );
-        } else {
-          if (user.providers.every((p) => p.userId !== profile.id)) {
-            user.providers.push({
-              userId: profile.id,
-              provider: profile.provider,
-            });
-            user.updatedAt = new Date();
-            await user.save();
-            console.info(
-              `Facebook added to user ${user._id.toString()} new provider`
-            );
-          }
-        }
+//         const query = email
+//           ? { email }
+//           : {
+//               providers: {
+//                 $elemMatch: { userId: profile.id, provider: profile.provider },
+//               },
+//             };
+//         let user = await User.findOne(query);
+//         if (!user) {
+//           user = new User({
+//             name: profile.displayName,
+//             providers: [{ userId: profile.id, provider: profile.provider }],
+//             photo: profile.photos?.[0]?.value ?? null,
+//             email: profile.emails?.[0].value ?? null,
+//           });
+//           await user.save();
+//           console.info(
+//             'New user from Facebook (user id: %s) created',
+//             profile.id
+//           );
+//         } else {
+//           if (user.providers.every((p) => p.userId !== profile.id)) {
+//             user.providers.push({
+//               userId: profile.id,
+//               provider: profile.provider,
+//             });
+//             user.updatedAt = new Date();
+//             await user.save();
+//             console.info(
+//               `Facebook added to user ${user._id.toString()} new provider`
+//             );
+//           }
+//         }
 
-        return done(null, user);
-      } catch (err) {
-        return done(err as Error);
-      }
-    }
-  )
-);
+//         return done(null, user);
+//       } catch (err) {
+//         return done(err as Error);
+//       }
+//     }
+//   )
+// );
 
 export {
   passport,
   GOOGLE_AUTH_CALLBACK_ROUTE,
-  FACEBOOK_AUTH_CALLBACK_ROUTE,
+  // FACEBOOK_AUTH_CALLBACK_ROUTE,
   generateToken,
   verifyUser,
   UserWithParsedId,

@@ -6,8 +6,6 @@ WORKDIR /usr/src/app
 
 # Copy package.json, yarn.lock, tsconfig.json, .eslintrc and prettierrc to the work directory
 COPY package.json yarn.lock tsconfig.json .eslintrc.js .prettierrc ./
-
-
 # Copy workspace folders
 COPY server ./server
 COPY client ./client

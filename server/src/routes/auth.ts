@@ -5,7 +5,7 @@ import type { ObjectId } from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
 
 import {
-  FACEBOOK_AUTH_CALLBACK_ROUTE,
+  // FACEBOOK_AUTH_CALLBACK_ROUTE,
   GOOGLE_AUTH_CALLBACK_ROUTE,
   generateToken,
   verifyUser,
@@ -50,7 +50,6 @@ authRouter.get(
 // Auth Callback
 authRouter.get(
   GOOGLE_AUTH_CALLBACK_ROUTE,
-
   passport.authenticate('google', {
     failureRedirect: LANDING_PAGE_ROUTE,
     session: false,
@@ -78,40 +77,40 @@ authRouter.get(
   }
 );
 
-authRouter.get(
-  FACEBOOK_AUTH_CALLBACK_ROUTE,
-  passport.authenticate('facebook', {
-    failureRedirect: LANDING_PAGE_ROUTE,
-    session: false,
-  }),
-  async (req, res, next) => {
-    try {
-      if (!req.user) next(createHttpError(401));
+// authRouter.get(
+//   FACEBOOK_AUTH_CALLBACK_ROUTE,
+//   passport.authenticate('facebook', {
+//     failureRedirect: LANDING_PAGE_ROUTE,
+//     session: false,
+//   }),
+//   async (req, res, next) => {
+//     try {
+//       if (!req.user) next(createHttpError(401));
 
-      const { _id, ...rest } = req.user as UserWithId;
-      const token = generateToken({ id: _id.toString(), ...rest });
+//       const { _id, ...rest } = req.user as UserWithId;
+//       const token = generateToken({ id: _id.toString(), ...rest });
 
-      console.info(
-        `[ID: ${_id.toString()}] token generated: ${
-          NODE_ENV === 'development'
-            ? token
-            : `${token.slice(0, 3)}...${token.slice(-3)}`
-        }`
-      );
-      res
-        .cookie('token', token, {
-          sameSite: true,
-          secure: true,
-          maxAge: 2 * 60 * 1000,
-          path: '/planning',
-        })
-        .clearCookie('connect.sid')
-        .redirect(`${LANDING_PAGE_ROUTE}planning`);
-    } catch (err) {
-      next(err);
-    }
-  }
-);
+//       console.info(
+//         `[ID: ${_id.toString()}] token generated: ${
+//           NODE_ENV === 'development'
+//             ? token
+//             : `${token.slice(0, 3)}...${token.slice(-3)}`
+//         }`
+//       );
+//       res
+//         .cookie('token', token, {
+//           sameSite: true,
+//           secure: true,
+//           maxAge: 2 * 60 * 1000,
+//           path: '/planning',
+//         })
+//         .clearCookie('connect.sid')
+//         .redirect(`${LANDING_PAGE_ROUTE}planning`);
+//     } catch (err) {
+//       next(err);
+//     }
+//   }
+// );
 
 authRouter.get('/me', verifyUser, async (req, res, next) => {
   try {

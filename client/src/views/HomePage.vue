@@ -3,7 +3,7 @@
     <div class="title">Plan Your Trip Now!</div>
     <div class="login">
       <GoogleLoginButton />
-      <FacebookLoginButton />
+      <!-- <FacebookLoginButton /> -->
     </div>
   </div>
   <img class="airplane" src="/images/airplane.png" />
@@ -12,12 +12,12 @@
 
 <script>
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
-import FacebookLoginButton from '../components/FacebookLoginButton.vue'
+// import FacebookLoginButton from '../components/FacebookLoginButton.vue'
 
 export default {
   components: {
     GoogleLoginButton,
-    FacebookLoginButton
+    // FacebookLoginButton
   }
 }
 </script>

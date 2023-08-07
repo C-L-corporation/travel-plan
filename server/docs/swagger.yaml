@@ -185,48 +185,62 @@ components:
       properties:
         _id:
           type: string
-          format: uuid
+          format: objectId
+          description: MongoDB ObjectId
           readOnly: true
         name:
           type: string
+          description: Name of the user
           example: "John Doe"
         email:
           type: string
           format: email
+          description: Email address of the user
           example: "john.doe@example.com"
         photo:
           type: string
           format: uri
+          description: URL of the user's photo
           example: "http://example.com/photo.jpg"
+          nullable: true
         providers:
           type: array
+          description: List of user's OAuth providers
           items:
-            $ref: '#/components/schemas/Provider'
+            type: object
+            properties:
+              provider:
+                type: string
+                description: Name of the OAuth provider
+                example: "Google"
+              userId:
+                type: string
+                description: User ID from the OAuth provider
+                example: "user-id-from-provider"
         admin:
           type: boolean
+          description: Indicates if the user is an admin
           default: false
           example: false
         plans:
           type: array
           items:
-            $ref: '#/components/schemas/Plan'
+            type: string
+            format: objectId
+            description: MongoDB ObjectId referencing the 'Plan' model
+          description: List of plans associated with the user
         createdAt:
           type: string
           format: date-time
+          description: Date and time when the user was created
           readOnly: true
+          example: "2023-07-31T10:20:30Z"
         updatedAt:
           type: string
           format: date-time
-          readOnly: true
-    Provider:
-      type: object
-      properties:
-        provider:
-          type: string
-          example: "Google"
-        userId:
-          type: string
-          example: "user-id-from-provider"
+          description: Date and time when the user was last updated
+          nullable: true
+          example: "2023-07-31T10:20:30Z"
     Plan:
       type: object
       required:
