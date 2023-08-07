@@ -75,7 +75,7 @@ app.use(
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true },
+    cookie: { secure: NODE_ENV === 'production' },
   })
 );
 app.use(passport.initialize());

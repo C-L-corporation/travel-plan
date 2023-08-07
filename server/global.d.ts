@@ -5,6 +5,8 @@ declare namespace NodeJS {
     GOOGLE_CLIENT_SECRET: string;
     FACEBOOK_APP_ID: string;
     FACEBOOK_APP_SECRET: string;
+    TWITTER_KEY: string;
+    TWITTER_SECRET: string;
     SESSION_SECRET: string;
     JWT_SECRET: string;
     CHATGPT_API_KEY: string;
