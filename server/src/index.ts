@@ -95,7 +95,11 @@ const apiRateLimiter = rateLimit({
     );
   },
 });
+
+// Trust proxy for IP detection
+app.set('trust proxy', 1);
 app.use(apiRateLimiter);
+
 app.use('/auth', authRouter);
 app.use('/plan', planRouter);
 
