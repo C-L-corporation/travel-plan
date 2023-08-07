@@ -52,7 +52,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: `/auth${GOOGLE_AUTH_CALLBACK_ROUTE}`,
+      callbackURL: `/api/auth${GOOGLE_AUTH_CALLBACK_ROUTE}`,
     },
     async function (accessToken, refreshToken, profile, done) {
       try {
@@ -110,7 +110,7 @@ passport.use(
     {
       clientID: FACEBOOK_APP_ID,
       clientSecret: FACEBOOK_APP_SECRET,
-      callbackURL: `/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
+      callbackURL: `/api/auth${FACEBOOK_AUTH_CALLBACK_ROUTE}`,
       profileFields: ['id', 'displayName', 'photos', 'email'],
     },
     async function (accessToken, refreshToken, profile, done) {

@@ -100,8 +100,8 @@ const apiRateLimiter = rateLimit({
 app.set('trust proxy', 1);
 app.use(apiRateLimiter);
 
-app.use('/auth', authRouter);
-app.use('/plan', planRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/plan', planRouter);
 
 if (NODE_ENV === 'development') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
