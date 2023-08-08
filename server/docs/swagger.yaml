@@ -208,6 +208,9 @@ components:
           description: List of user's OAuth providers
           items:
             type: object
+            required:
+              - provider
+              - userId
             properties:
               provider:
                 type: string
@@ -217,6 +220,11 @@ components:
                 type: string
                 description: User ID from the OAuth provider
                 example: "user-id-from-provider"
+              username:
+                type: string
+                description: Username from the OAuth provider
+                example: "username-from-provider"
+                nullable:: true
         admin:
           type: boolean
           description: Indicates if the user is an admin
