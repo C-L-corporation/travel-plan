@@ -17,8 +17,6 @@ MONGODB_URL=<YOUR_MONGODB_URL>
 CHATGPT_API_KEY=<CHATGPT_API_KEY>
 ```
 
-```bash
-
 #### Add `system_prompt.txt` to `/server` for local development
 
 ### Install Dependencies
