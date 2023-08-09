@@ -18,15 +18,21 @@ export default {
   async created() {
     try {
       if (this.$route.path === '/planning') {
-        const token = Cookies.get('token')
-        axios.defaults.headers.common = { Authorization: `Bearer ${token}` }
-        Cookies.remove('token', { path: '/planning' })
-        await this.fetchUserName()
+        let token = localStorage.getItem('token')
+        console.log('1', token)
+        if (!token) {
+          token = Cookies.get('token')
+          console.log('2', token)
+        }
+        if (token) {
+          localStorage.setItem('token', token)
+          console.log('3', axios.defaults.headers.common.Authorization)
+          axios.defaults.headers.common = { Authorization: `Bearer ${token}` }
+          Cookies.remove('token', { path: '/planning' })
+          await this.fetchUserName()
+        }
       }
 
-      if (!this.isLoggedIn) {
-        this.$router.push('/')
-      }
     } catch (error) {
       console.error('error occured', error)
     }
@@ -36,15 +42,10 @@ export default {
     ...mapActions('user', ['fetchUserName', 'logoutUser']),
     logout() {
       this.logoutUser();
+      this.$router.push('/')
     }
   },
-  watch: {
-    isLoggedIn(loggedIn) {
-      if (!loggedIn) {
-        this.$router.push('/')
-      }
-    }
-  },
+
 }
 </script>
 
