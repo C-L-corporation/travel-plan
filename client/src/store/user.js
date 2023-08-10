@@ -27,7 +27,6 @@ const user = {
       return axios
         .get('/api/auth/me')
         .then((response) => {
-          console.log(response)
           commit('setUserName', response.data.name)
         })
         .catch((error) => {
@@ -37,7 +36,7 @@ const user = {
    
 
     logoutUser({ commit }) {
-      axios.defaults.headers.common['Authorization'] = '';
+      axios.defaults.headers.common['Authorization'] = undefined;
       localStorage.clear()
       commit('clearUserData');      
     }

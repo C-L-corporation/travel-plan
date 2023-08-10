@@ -11,8 +11,8 @@ export default {
     ...mapActions('user',['fetchUserName']),
 
     async checkLogin() {
-      if (!this.isLoggedIn) {
-      await this.fetchUserName()
+      if (!this.isLoggedIn && axios.defaults.headers.common.Authorization) {
+        await this.fetchUserName()
       }
       if (!this.isLoggedIn) {
         this.$router.push('/');
@@ -24,16 +24,18 @@ export default {
 
   created() {
     try {
-      let token = localStorage.getItem('token');
-      if (!token && this.$route.path === '/planning') {
-        token = Cookies.get('token');
-      }
-      if (token) {
-        localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        Cookies.remove('token', { path: '/planning' });
+        if(!axios.defaults.headers.common.Authorization){
+          let token = localStorage.getItem('token');
+           if (!token && this.$route.path === '/planning') {
+              token = Cookies.get('token');
+           }
+           if (token) {
+              localStorage.setItem('token', token);
+              axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+              Cookies.remove('token', { path: '/planning' });
+           }  
+        }
         this.checkLogin();
-      }
     } catch (error) {
       console.error('Error occurred', error);
     }
