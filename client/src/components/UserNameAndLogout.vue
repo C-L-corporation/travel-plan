@@ -7,39 +7,20 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-import axios from 'axios'
-import Cookies from 'js-cookie'
+import authMixin from '../authMixin'
 
 export default {
   computed: {
     ...mapState('user', ['userName']),
     ...mapGetters('user', ['isLoggedIn'])
   },
-  async created() {
-    try {
-      if (this.$route.path === '/planning') {
-        let token = localStorage.getItem('token')
-        console.log('1', token)
-        if (!token) {
-          token = Cookies.get('token')
-          console.log('2', token)
-        }
-        if (token) {
-          localStorage.setItem('token', token)
-          console.log('3', axios.defaults.headers.common.Authorization)
-          axios.defaults.headers.common = { Authorization: `Bearer ${token}` }
-          Cookies.remove('token', { path: '/planning' })
-          await this.fetchUserName()
-        }
-      }
-
-    } catch (error) {
-      console.error('error occured', error)
-    }
+  mixins: [authMixin],
+  created() {
+    this.checkLogin();
   },
 
   methods: {
-    ...mapActions('user', ['fetchUserName', 'logoutUser']),
+    ...mapActions('user', ['logoutUser']),
     logout() {
       this.logoutUser();
       this.$router.push('/')
