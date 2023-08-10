@@ -11,7 +11,9 @@ export default {
     ...mapActions('user',['fetchUserName']),
 
     async checkLogin() {
+      if (!this.isLoggedIn) {
       await this.fetchUserName()
+      }
       if (!this.isLoggedIn) {
         this.$router.push('/');
       } else if (this.$route.path === '/') {
@@ -34,5 +36,7 @@ export default {
     } catch (error) {
       console.error('Error occurred', error);
     }
+    this.checkLogin();
   },
+  
 }

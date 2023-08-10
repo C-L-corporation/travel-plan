@@ -15,9 +15,6 @@ export default {
     ...mapGetters('user', ['isLoggedIn'])
   },
   mixins: [authMixin],
-  created() {
-    this.checkLogin();
-  },
 
   methods: {
     ...mapActions('user', ['logoutUser']),
