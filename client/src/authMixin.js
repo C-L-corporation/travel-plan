@@ -32,11 +32,11 @@ export default {
         localStorage.setItem('token', token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         Cookies.remove('token', { path: '/planning' });
+        this.checkLogin();
       }
     } catch (error) {
       console.error('Error occurred', error);
     }
-    this.checkLogin();
   },
   
 }
