@@ -13,12 +13,14 @@
 <script>
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 // import FacebookLoginButton from '../components/FacebookLoginButton.vue'
+import authMixin from '../authMixin'
 
 export default {
   components: {
     GoogleLoginButton,
     // FacebookLoginButton
-  }
+  },
+  mixins: [authMixin],
 }
 </script>
 

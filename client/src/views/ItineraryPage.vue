@@ -17,9 +17,11 @@
 import TimeLine from '../components/TimeLine.vue'
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 import { mapState, mapGetters } from 'vuex'
+import authMixin from '../authMixin'
 
 export default {
   components: { TimeLine, UserNameAndLogout },
+  mixins: [authMixin],
   computed: {
     ...mapState('user', ['userName']),
     ...mapState('data', ['selectedData']),

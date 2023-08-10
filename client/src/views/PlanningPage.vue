@@ -70,11 +70,13 @@
 <script>
 import UserNameAndLogout from '../components/UserNameAndLogout.vue'
 import { mapMutations } from 'vuex'
+import authMixin from '../authMixin'
 
 export default {
   components: {
     UserNameAndLogout
   },
+  mixins: [authMixin],
 
   data() {
     return {

@@ -4,7 +4,8 @@ import ErrorAlert from './components/ErrorAlert.vue'
 
 
 export default {
-  components: { TheFooter, ErrorAlert }
+  components: { TheFooter, ErrorAlert },
+
 }
 </script>
 

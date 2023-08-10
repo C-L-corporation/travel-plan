@@ -33,8 +33,11 @@ const user = {
           console.error(error)
         })
     },
+   
+
     logoutUser({ commit }) {
-      axios.defaults.headers.common['Authorization'] = '';
+      axios.defaults.headers.common['Authorization'] = undefined;
+      localStorage.clear()
       commit('clearUserData');      
     }
 }
