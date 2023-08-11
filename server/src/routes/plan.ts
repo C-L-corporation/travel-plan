@@ -8,7 +8,12 @@ import dontenv from 'dotenv';
 import { UserWithParsedId, verifyUser } from '../authenticate';
 import { User } from '../models';
 import { IPlan, Plan } from '../models/plan';
-import { isDeepEqual, getUserPrompt, validateUserQuery, checkIsValidToCallChatGPT } from '../utils';
+import {
+  isDeepEqual,
+  getUserPrompt,
+  validateUserQuery,
+  checkIsValidToCallChatGPT,
+} from '../utils';
 import { GptResponse } from '../types';
 
 dontenv.config();
@@ -26,7 +31,7 @@ export function setOpenAIClient(openai: OpenAIApi): void {
 
 const planRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30,
+  max: 20,
   handler: (req, res, next) => {
     next(
       createHttpError(
@@ -37,113 +42,91 @@ const planRateLimiter = rateLimit({
   },
 });
 
-const gptRateLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 10,
-  handler: (req, res, next) => {
-    next(
-      createHttpError(
-        429,
-        "You've exceeded the maximum number of GPT calls for today. Please retry tomorrow."
-      )
-    );
-  },
-});
-
 const planRouter = express.Router();
+planRouter.use(planRateLimiter);
 planRouter.use(express.json());
 
-planRouter.post(
-  '/same-query-check',
-  planRateLimiter,
-  verifyUser,
-  async (req, res, next) => {
-    try {
-      const {
-        hotelLocation,
-        days,
-        transportation,
-        city,
-        nation,
-        placeOfInterest,
-        foodCategories,
-      } = req.body;
+planRouter.post('/same-query-check', verifyUser, async (req, res, next) => {
+  try {
+    const {
+      hotelLocation,
+      days,
+      transportation,
+      city,
+      nation,
+      placeOfInterest,
+      foodCategories,
+    } = req.body;
 
-      const { valid, message } = validateUserQuery({
-        hotelLocation,
-        days,
-        transportation,
-        city,
-        nation,
-        placeOfInterest,
-        foodCategories,
-      });
+    const { valid, message } = validateUserQuery({
+      hotelLocation,
+      days,
+      transportation,
+      city,
+      nation,
+      placeOfInterest,
+      foodCategories,
+    });
 
-      if (!valid) {
-        next(createHttpError(400, message));
-      }
-
-      if (!req.user) next(createHttpError(401));
-      const user = await User.findById(
-        (req.user as UserWithParsedId).id
-      ).populate({
-        path: 'plans',
-        options: { sort: { createdAt: -1 }, limit: 1 },
-      });
-
-      if (!user) {
-        next(createHttpError(401));
-        return;
-      }
-
-      if (user.plans.length > 0) {
-        const [latestPlan] = user.plans as unknown as IPlan[];
-
-        return (
-          latestPlan.query.hotelLocation === hotelLocation &&
-          latestPlan.query.days === days &&
-          latestPlan.query.transportation === transportation &&
-          latestPlan.query.city === city &&
-          latestPlan.query.nation === nation &&
-          isDeepEqual(latestPlan.query.placeOfInterest, placeOfInterest) &&
-          isDeepEqual(latestPlan.query.foodCategories, foodCategories)
-        );
-      }
-      return false;
-    } catch (err) {
-      next(err);
+    if (!valid) {
+      next(createHttpError(400, message));
     }
-  }
-);
 
-planRouter.get(
-  '/latest',
-  planRateLimiter,
-  verifyUser,
-  async (req, res, next) => {
     if (!req.user) next(createHttpError(401));
+    const user = await User.findById(
+      (req.user as UserWithParsedId).id
+    ).populate({
+      path: 'plans',
+      options: { sort: { createdAt: -1 }, limit: 1 },
+    });
 
-    try {
-      const user = await User.findById(
-        (req.user as UserWithParsedId).id
-      ).populate({
-        path: 'plans',
-        options: { sort: { createdAt: -1 }, limit: 1 }, // sort in descending order
-      });
-
-      if (!user) {
-        next(createHttpError(401));
-        return;
-      }
-      const [latestPlan] = user.plans as unknown as [IPlan];
-      return res.json(latestPlan);
-    } catch (err) {
-      next(err);
+    if (!user) {
+      next(createHttpError(401));
+      return;
     }
-  }
-);
 
-planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
+    if (user.plans.length > 0) {
+      const [latestPlan] = user.plans as unknown as IPlan[];
+
+      return (
+        latestPlan.query.hotelLocation === hotelLocation &&
+        latestPlan.query.days === days &&
+        latestPlan.query.transportation === transportation &&
+        latestPlan.query.city === city &&
+        latestPlan.query.nation === nation &&
+        isDeepEqual(latestPlan.query.placeOfInterest, placeOfInterest) &&
+        isDeepEqual(latestPlan.query.foodCategories, foodCategories)
+      );
+    }
+    return false;
+  } catch (err) {
+    next(err);
+  }
+});
+
+planRouter.get('/latest', verifyUser, async (req, res, next) => {
+  if (!req.user) next(createHttpError(401));
+
+  try {
+    const user = await User.findById(
+      (req.user as UserWithParsedId).id
+    ).populate({
+      path: 'plans',
+      options: { sort: { createdAt: -1 }, limit: 1 }, // sort in descending order
+    });
+
+    if (!user) {
+      next(createHttpError(401));
+      return;
+    }
+    const [latestPlan] = user.plans as unknown as [IPlan];
+    return res.json(latestPlan);
+  } catch (err) {
+    next(err);
+  }
+});
+
+planRouter.post('/new', verifyUser, async (req, res, next) => {
   const {
     hotelLocation,
     days,
@@ -176,7 +159,9 @@ planRouter.post('/new', gptRateLimiter, verifyUser, async (req, res, next) => {
       next(createHttpError(500, 'Missing OpenAI client'));
       return;
     }
-    const isValidToCallChatGPT = await checkIsValidToCallChatGPT(req.user as UserWithParsedId);
+    const isValidToCallChatGPT = await checkIsValidToCallChatGPT(
+      req.user as UserWithParsedId
+    );
     if (!isValidToCallChatGPT) {
       next(
         createHttpError(
