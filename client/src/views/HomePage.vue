@@ -63,11 +63,56 @@ export default {
 
 .tag {
   position: absolute;
-  width: 400px;
-  top: 300px;
-  right: 100px;
+  width: 300px;
+  top: 350px;
+  right: 0px;
 }
 
+@media (max-width: 920px) {
+  .page {
+    background-image: url('/images/linepaper.png');
+    background-position: cover;
+    background-size: 100% 350px;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title {
+    font-family: 'Satisfy', cursive;
+    font-size: 50px;
+    color: #3b342a;
+    margin-top: 80px;
+  }
+
+  .login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/images/contentpaper.png');
+    background-position: cover;
+    width: 400px;
+    height: 120px;
+  }
+
+  /* images */
+  .airplane {
+    position: absolute;
+    width: 300px;
+    top: -50px;
+    left: 40px;
+  }
+
+  .tag {
+    position: absolute;
+    width: 200px;
+    top: 180px;
+    right: 0px;
+  }
+}
 
 @media (max-width: 768px) {
   .page {
