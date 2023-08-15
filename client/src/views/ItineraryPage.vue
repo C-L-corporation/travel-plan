@@ -4,7 +4,7 @@
     <div>{{ userName }}'s</div>
     <img class="line" src="/images/line.png" />
     <div class="subtitle">{{ selectedData.day }} DAYS TRIP</div>
-    <div>{{ selectedData.place }} Itinerary</div>
+    <div>{{ selectedData.place }} Travel Plan</div>
     <img class="airplane" src="/images/airplane.png" />
     <img class="bagcoffee" src="/images/bagcoffee.png" />
   </div>
@@ -26,13 +26,21 @@ export default {
     ...mapState('user', ['userName']),
     ...mapState('data', ['selectedData']),
     ...mapGetters('user', ['isLoggedIn']),
+
   },
   created() {
     if (!this.isLoggedIn) {
       this.$router.push('/')
     }
-  }
+    if (!this.selectedData) {
+      console.log('refresh', this.selectedData)
+      this.$router.push('/planning')
+    }
+  },
+
 }
+
+
 </script>
 
 <style scoped>
