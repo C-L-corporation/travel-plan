@@ -44,7 +44,7 @@
         </v-timeline>
       </v-col>
       <v-col cols="3" class="image-position">
-        <img class="image" src="/images/pic5.png" />
+        <img class="image" src="/images/pic2.png" />
       </v-col>
     </v-row>
   </v-container>

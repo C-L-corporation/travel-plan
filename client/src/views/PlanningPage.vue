@@ -63,7 +63,7 @@
 
     <img class="suitcase" src="/images/suitcase.png" />
     <img class="camera" src="/images/camera.png" />
-    <img class="pic4" src="/images/pic4.png" />
+    <img class="pic1" src="/images/pic1.png" />
   </div>
 </template>
 
@@ -234,7 +234,7 @@ export default {
   right: 100px;
 }
 
-.pic4 {
+.pic1 {
   position: absolute;
   bottom: -800px;
   right: 0px;
@@ -350,7 +350,7 @@ export default {
     right: 0px;
   }
 
-  .pic4 {
+  .pic1 {
     position: absolute;
     width: 250px;
     bottom: -550px;
@@ -453,23 +453,23 @@ export default {
 
   /* images */
   .suitcase {
+    width: 100px;
     bottom: -420px;
     left: 0px;
-    width: 100px;
   }
 
   .camera {
     position: absolute;
+    width: 100px;
     top: 140px;
     right: 0px;
-    width: 100px;
   }
 
-  .pic4 {
+  .pic1 {
     position: absolute;
+    width: 200px;
     bottom: -650px;
     right: 0px;
-    width: 200px;
   }
 }
 </style>
