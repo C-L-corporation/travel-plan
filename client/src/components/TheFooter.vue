@@ -1,6 +1,6 @@
 <template>
   <div class="gpt">Powered by ChatGPT</div>
-  <div class="copyright">© Christine Lin 2023</div>
+  <div class="copyright">Travlan © Christine Lin 2023</div>
 </template>
 
 <script></script>
