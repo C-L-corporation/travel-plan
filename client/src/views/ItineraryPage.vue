@@ -64,15 +64,53 @@ export default {
 
 .airplane {
   position: absolute;
-  top: -50px;
-  right: 150px;
+  width: 320px;
+  top: 20px;
+  right: 80px;
 }
 
 .bagcoffee {
   position: absolute;
-  bottom: -300px;
+  width: 200px;
+  bottom: -200px;
   left: 50px;
-  width: 250px;
+}
+
+@media (max-width: 920px) {
+  .top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 100px auto 10px;
+    font-family: 'Satisfy', cursive;
+    font-size: 30px;
+    text-align: center;
+    color: #3b342a;
+    background-color: #ffffff;
+    width: 70%;
+  }
+
+  .subtitle {
+    font-family: 'Handlee', cursive;
+    font-size: 25px;
+  }
+
+  /* images */
+  .line {
+    text-align: center;
+    height: 20px;
+    width: 250px;
+  }
+
+  .airplane {
+    position: absolute;
+    top: 25px;
+    width: 250px;
+  }
+
+  .bagcoffee {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {

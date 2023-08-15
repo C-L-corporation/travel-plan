@@ -63,7 +63,7 @@
 
     <img class="suitcase" src="/images/suitcase.png" />
     <img class="camera" src="/images/camera.png" />
-    <img class="pic4" src="/images/pic4.png" />
+    <img class="pic1" src="/images/pic1.png" />
   </div>
 </template>
 
@@ -223,26 +223,25 @@ export default {
 /* images */
 .suitcase {
   position: absolute;
+  width: 250px;
   bottom: 10px;
-  left: 50px;
-  width: 300px;
+  left: 20px;
 }
 
 .camera {
   position: absolute;
   top: 150px;
-  right: 150px;
+  right: 100px;
 }
 
-.pic4 {
+.pic1 {
   position: absolute;
-  bottom: -700px;
+  bottom: -800px;
   right: 0px;
-  width: 450px;
+  width: 350px;
 }
 
-
-@media (max-width: 768px) {
+@media (max-width: 920px) {
   .page {
     display: flex;
     flex-direction: column;
@@ -252,22 +251,22 @@ export default {
     text-align: center;
     background-image: url('/images/paper.png');
     background-position-x: 50%;
-    background-size: 120% 100%;
+    background-size: 80% 100%;
   }
 
   .title {
     font-family: 'Satisfy', cursive;
-    font-size: 40px;
+    font-size: 50px;
     color: #3b342a;
     margin-top: 80px;
   }
 
   .content {
     font-family: 'Handlee', cursive;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     color: #3b342a;
-    width: 200px;
+    width: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -280,17 +279,16 @@ export default {
     background-image: url('images/contentpaper.png');
     background-position: center;
     background-size: 70%;
-    width: 450px;
+    width: 600px;
     height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
   }
 
   .selectors {
-    width: 200px;
+    width: 300px;
     height: 50px;
   }
 
@@ -339,23 +337,139 @@ export default {
 
   /* images */
   .suitcase {
-    bottom: -420px;
+    position: absolute;
+    width: 180px;
+    top: 420px;
     left: 20px;
-    width: 100px;
   }
 
   .camera {
     position: absolute;
+    width: 120px;
     top: 140px;
     right: 0px;
-    width: 100px;
   }
 
-  .pic4 {
+  .pic1 {
     position: absolute;
-    bottom: -500px;
+    width: 250px;
+    bottom: -550px;
     right: 0px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    text-align: center;
+    background-image: url('/images/paper.png');
+    background-position-x: 50%;
+    background-size: 120% 100%;
+  }
+
+  .title {
+    font-family: 'Satisfy', cursive;
+    font-size: 40px;
+    color: #3b342a;
+    margin-top: 80px;
+  }
+
+  .content {
+    font-family: 'Handlee', cursive;
+    font-size: 18px;
+    font-weight: bold;
+    color: #3b342a;
     width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  .contentpaper {
+    background-image: url('images/contentpaper.png');
+    background-position: center;
+    background-size: 70%;
+    width: 450px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .selectors {
+    width: 200px;
+    height: 50px;
+  }
+
+  .button {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    color: white;
+    background-color: #3d8994;
+  }
+
+  .dialog {
+    font-family: 'Handlee', cursive;
+    font-size: 25px;
+    font-weight: bold;
+    color: #3b342a;
+    text-align: center;
+  }
+
+  .card-title {
+    font-family: 'Satisfy', cursive;
+    font-size: 35px;
+    font-weight: bold;
+    color: #3b342a;
+    margin-top: 20px;
+  }
+
+  .card-text {
+    font-family: 'Handlee', cursive;
+    color: #3b342a;
+    margin: 10px;
+  }
+
+  .card-button {
+    font-weight: bold;
+    color: #3d8994;
+  }
+
+  .card-button:hover {
+    font-weight: bold;
+    color: white;
+    background-color: #3d8994;
+  }
+
+  /* images */
+  .suitcase {
+    width: 100px;
+    bottom: -420px;
+    left: 0px;
+  }
+
+  .camera {
+    position: absolute;
+    width: 100px;
+    top: 140px;
+    right: 0px;
+  }
+
+  .pic1 {
+    position: absolute;
+    width: 200px;
+    bottom: -650px;
+    right: 0px;
   }
 }
 </style>
