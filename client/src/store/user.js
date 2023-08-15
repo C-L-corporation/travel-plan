@@ -23,13 +23,17 @@ const user = {
     }
   },
   actions: {
-    fetchUserName({ commit }) {
+    fetchUserName({ commit, dispatch }) {
       return axios
         .get('/api/auth/me')
         .then((response) => {
           commit('setUserName', response.data.name)
         })
         .catch((error) => {
+          // token expired
+          if (error.response.status === 401) {
+            dispatch('logoutUser')
+          }
           console.error(error)
         })
     },
