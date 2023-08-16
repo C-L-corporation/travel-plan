@@ -3,8 +3,8 @@
   <div class="top">
     <div>{{ userName }}'s</div>
     <img class="line" src="/images/line.png" />
-    <div class="subtitle">{{ selectedData.day }} DAYS TRIP</div>
-    <div>{{ selectedData.place }} Travel Plan</div>
+    <div class="subtitle">{{ selectedData?.day }} DAYS TRIP</div>
+    <div>{{ selectedData?.place }} Travel Plan</div>
     <img class="airplane" src="/images/airplane.png" />
     <img class="bagcoffee" src="/images/bagcoffee.png" />
   </div>
