@@ -87,6 +87,7 @@ export default {
   methods: {
     ...mapMutations('error', ['setError', 'clearError']),
     fetchData() {
+      if (!this.selectedData) return
       const {
         place,
         day,

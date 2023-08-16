@@ -236,7 +236,7 @@ export default {
 
 .pic1 {
   position: absolute;
-  bottom: -800px;
+  bottom: -750px;
   right: 0px;
   width: 350px;
 }
@@ -353,7 +353,7 @@ export default {
   .pic1 {
     position: absolute;
     width: 250px;
-    bottom: -550px;
+    bottom: -200px;
     right: 0px;
   }
 }
@@ -468,7 +468,7 @@ export default {
   .pic1 {
     position: absolute;
     width: 200px;
-    bottom: -650px;
+    bottom: -500px;
     right: 0px;
   }
 }
