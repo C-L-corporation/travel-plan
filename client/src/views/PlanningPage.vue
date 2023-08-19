@@ -61,10 +61,9 @@
       </v-dialog>
     </div>
 
-    <img class="suitcase" src="/images/suitcase.png" />
-    <img class="camera" src="/images/camera.png" />
-    <img class="pic1" src="/images/pic1.png" />
   </div>
+  <img class="suitcase" src="/images/suitcase.png" />
+  <img class="camera" src="/images/camera.png" />
 </template>
 
 <script>
@@ -224,7 +223,7 @@ export default {
 .suitcase {
   position: absolute;
   width: 250px;
-  bottom: 10px;
+  bottom: 0px;
   left: 20px;
 }
 
@@ -234,12 +233,8 @@ export default {
   right: 100px;
 }
 
-.pic1 {
-  position: absolute;
-  bottom: -750px;
-  right: 0px;
-  width: 350px;
-}
+
+
 
 @media (max-width: 920px) {
   .page {
@@ -350,12 +345,8 @@ export default {
     right: 0px;
   }
 
-  .pic1 {
-    position: absolute;
-    width: 250px;
-    bottom: -200px;
-    right: 0px;
-  }
+
+
 }
 
 @media (max-width: 768px) {
@@ -454,7 +445,7 @@ export default {
   /* images */
   .suitcase {
     width: 100px;
-    bottom: -420px;
+    bottom: 0px;
     left: 0px;
   }
 
@@ -465,11 +456,7 @@ export default {
     right: 0px;
   }
 
-  .pic1 {
-    position: absolute;
-    width: 200px;
-    bottom: -500px;
-    right: 0px;
-  }
+
+
 }
 </style>
