@@ -35,8 +35,8 @@ const app = express();
 
 if (!MONGODB_URL) throw new Error('No MongoDB URL provided');
 connect(MONGODB_URL)
-  .then(() => console.log('connected to db'))
-  .catch((err) => console.log(err));
+  .then(() => console.info('connected to db'))
+  .catch((err) => console.error(err));
 
 if (!CHATGPT_API_KEY) throw new Error('No chatGPT key provided');
 
@@ -82,6 +82,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../..', 'client', 'dist')));
+// SPA Fallback
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next(); // Skip fallback for API routes
+  }
+  res.sendFile(path.resolve(__dirname, '../..', 'client', 'dist', 'index.html'));
+});
 
 const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
